@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>{{name}}｜{{title}}</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #ffffff;
+    --accent: #2b9ea3;
+    --accent-dark: #1f7d82;
+    --dark: #3c3c3c;
+    --text: #2a2a2a;
+    --muted: #5a5a5a;
+    --light: #f4f4f4;
+    --border: #dcdcdc;
+  }
+
+  html, body { width: 100%; }
+  body {
+    font-family: "Noto Sans CJK SC", "Noto Sans SC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #scaler { width: 1760px; height: 2464px; position: relative; transform-origin: top left; }
+
+  .page {
+    width: 1760px;
+    min-height: 2464px;
+    padding: 80px 90px 60px;
+    position: relative;
+    background: #fff;
+  }
+
+  /* ===== header ===== */
+  .header { display: flex; justify-content: space-between; align-items: flex-start; }
+  .header .left { flex: 1; }
+  h1 { font-size: 140px; font-weight: 900; color: #222; letter-spacing: 4px; line-height: 1.05; }
+  .subtitle { font-size: 66px; font-weight: 700; color: #222; margin-top: 18px; letter-spacing: 2px; }
+
+  .job-intent { margin-top: 44px; }
+  .job-intent .label { font-size: 36px; font-weight: 700; color: #222; margin-bottom: 6px; }
+  .job-intent .value { font-size: 40px; font-weight: 700; color: #222; line-height: 1.35; }
+  .job-intent .sep { color: var(--accent); margin: 0 10px; }
+
+  /* avatar placeholder */
+  .avatar-wrap { width: 340px; height: 340px; position: relative; margin-top: 5px; }
+  .avatar-svg { width: 100%; height: 100%; }
+
+  /* ===== geometric bar ===== */
+  .geo-bar {
+    height: 52px;
+    margin: 48px 0 28px;
+    position: relative;
+    background: linear-gradient(to right, var(--accent) 0%, var(--accent) 55%, transparent 55%);
+  }
+  .geo-bar::after {
+    content: ""; position: absolute; top: 0; right: 0;
+    width: 52%; height: 100%;
+    background: linear-gradient(to bottom, #4a4a4a, #333);
+    clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
+  }
+
+  /* ===== contact strip ===== */
+  .contact-strip {
+    display: flex; align-items: center; gap: 40px;
+    padding: 14px 0 22px;
+    border-bottom: 2px solid #e0e0e0;
+    font-size: 38px; font-weight: 700; color: #222;
+  }
+  .contact-strip .item { display: flex; align-items: center; gap: 16px; }
+  .contact-strip .sep { color: #bbb; font-weight: 400; }
+  .contact-strip .icon { color: var(--accent); width: 36px; height: 36px; display: inline-flex; }
+  .contact-strip .icon svg { width: 36px; height: 36px; fill: var(--accent); }
+
+  /* ===== main 3-col grid ===== */
+  .main {
+    display: grid;
+    grid-template-columns: minmax(0, 0.28fr) minmax(0, 0.42fr) minmax(0, 0.30fr);
+    column-gap: 48px;
+    margin-top: 44px;
+  }
+  .col { display: flex; flex-direction: column; }
+
+  /* ===== section ===== */
+  .sec { margin-bottom: 36px; }
+  .sec-title {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 34px; font-weight: 800; color: #222;
+    margin-bottom: 20px;
+    letter-spacing: 1.5px;
+  }
+  .sec-title .dot {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--accent);
+    flex: none;
+    position: relative;
+  }
+  .sec-title .dot::after {
+    content: ""; position: absolute; inset: 5px; border-radius: 50%;
+    background: #fff;
+  }
+  .sec-title.left-dot .dot { background: #555; }
+
+  /* ===== list items ===== */
+  .item-row {
+    display: flex; gap: 18px;
+    font-size: 25px; line-height: 1.5; color: #333;
+    margin-bottom: 14px;
+  }
+  .item-row .diamond {
+    width: 13px; height: 13px; flex: none;
+    background: var(--accent);
+    transform: rotate(45deg);
+    margin-top: 12px;
+  }
+  .item-row.grey .diamond { background: #888; }
+  .item-row b { color: #222; font-weight: 800; font-size: 26px; }
+  .item-row .c { color: var(--accent); font-weight: 700; white-space: nowrap; }
+
+  /* sub list with dots */
+  .sublist { margin-left: 32px; margin-top: 6px; }
+  .sublist .sub {
+    font-size: 22px; color: #555; line-height: 1.5;
+    padding-left: 20px; position: relative;
+    margin-bottom: 6px;
+  }
+  .sublist .sub::before {
+    content: ""; position: absolute; left: 0; top: 11px;
+    width: 10px; height: 2px; background: #999;
+  }
+
+  /* divider lines */
+  .divider-line { height: 2px; background: #e8e8e8; margin: 28px 0; }
+
+  /* ===== middle column top: tag text ===== */
+  .tag-intro {
+    display: flex; align-items: flex-start; gap: 16px;
+    margin-bottom: 16px;
+  }
+  .tag-intro .dot {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--accent);
+    flex: none;
+    position: relative;
+    margin-top: 5px;
+  }
+  .tag-intro .dot::after {
+    content: ""; position: absolute; inset: 5px; border-radius: 50%;
+    background: #fff;
+  }
+  .tag-intro .text {
+    font-size: 32px; font-weight: 800; color: #222; line-height: 1.4;
+    flex: 1;
+  }
+  .tag-intro .sep { color: var(--accent); margin: 0 6px; }
+
+  .hatch-bar {
+    height: 34px;
+    background: repeating-linear-gradient(
+      -55deg,
+      rgba(180, 180, 180, 0.4) 0 8px,
+      transparent 8px 18px
+    );
+    margin: 8px 0 14px;
+    border-radius: 2px;
+  }
+
+  .teal-strip {
+    background: var(--accent);
+    color: #fff;
+    padding: 20px 26px;
+    font-size: 30px; font-weight: 800;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  /* ===== right column: core skills ===== */
+  .skill-meter {
+    display: flex; align-items: center; gap: 12px;
+    margin: 18px 0 20px;
+  }
+  .skill-meter .bar {
+    flex: 1; height: 10px;
+    background: var(--accent);
+    border-radius: 5px;
+    position: relative;
+  }
+  .skill-meter .node {
+    position: absolute; top: -7px; width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800; color: var(--accent);
+  }
+  .skill-meter .node.n1 { left: 28%; }
+  .skill-meter .node.n2 { right: 18%; }
+  .skill-labels {
+    display: flex; justify-content: space-between;
+    font-size: 22px; color: #666;
+    margin-bottom: 22px;
+  }
+
+  /* tag cloud */
+  .tags { display: flex; flex-wrap: wrap; gap: 14px 16px; }
+  .tag {
+    padding: 12px 24px;
+    border-radius: 40px;
+    border: 2.5px solid var(--accent);
+    background: #fff;
+    color: var(--accent);
+    font-size: 24px; font-weight: 700;
+    white-space: nowrap;
+  }
+  .tag.filled {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* self eval */
+  .self-eval {
+    font-size: 25px; line-height: 1.65;
+    color: #2a2a2a;
+    margin-top: 8px;
+  }
+
+  /* repo links */
+  .repo-list { margin-top: 12px; }
+  .repo-link {
+    padding: 14px 0;
+    border-bottom: 1.5px solid #e0e0e0;
+    font-size: 24px; font-weight: 700;
+    color: var(--accent);
+    overflow-wrap: break-word;
+  }
+  .repo-link b { color: #333; font-weight: 800; }
+  .repo-link .sep { color: var(--accent); margin: 0 6px; }
+  .repo-link .url { color: var(--accent); font-weight: 600; }
+
+  /* bottom */
+  .bottom-bar {
+    position: absolute; bottom: 30px; left: 80px; right: 80px;
+    height: 5px; background: var(--accent);
+    border-radius: 3px;
+  }
+
+  /* print */
+  @media print {
+    @page { size: A4 portrait; margin: 0; }
+    body { overflow: visible; }
+    #scaler { zoom: 0.451 !important; }
+  }
+</style>
+</head>
+<body>
+<div id="scaler">
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="left">
+      <h1>{{name}}</h1>
+      <div class="subtitle">{{title}}</div>
+      <div class="job-intent">
+        <div class="label">求职意向：</div>
+        <div class="value">
+          大模型底层研发<span class="sep">｜</span>多模态大模型算法工程师<span class="sep">｜</span>AI全栈研发工程师
+        </div>
+      </div>
+    </div>
+    <div class="avatar-wrap">
+      <svg class="avatar-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- outer square frame -->
+        <rect x="8" y="8" width="184" height="184" fill="none" stroke="#999" stroke-width="1.2"/>
+        <!-- corner brackets -->
+        <path d="M8 28 L8 8 L28 8" fill="none" stroke="#555" stroke-width="2"/>
+        <path d="M172 8 L192 8 L192 28" fill="none" stroke="#555" stroke-width="2"/>
+        <path d="M192 172 L192 192 L172 192" fill="none" stroke="#555" stroke-width="2"/>
+        <path d="M28 192 L8 192 L8 172" fill="none" stroke="#555" stroke-width="2"/>
+        <!-- concentric circles -->
+        <circle cx="100" cy="92" r="70" fill="none" stroke="#aaa" stroke-width="0.8"/>
+        <circle cx="100" cy="92" r="58" fill="none" stroke="#aaa" stroke-width="0.8"/>
+        <circle cx="100" cy="92" r="46" fill="none" stroke="#aaa" stroke-width="0.8"/>
+        <circle cx="100" cy="92" r="34" fill="none" stroke="#aaa" stroke-width="0.8"/>
+        <!-- crosshairs -->
+        <line x1="100" y1="10" x2="100" y2="190" stroke="#aaa" stroke-width="0.8"/>
+        <line x1="10" y1="92" x2="190" y2="92" stroke="#aaa" stroke-width="0.8"/>
+        <!-- head silhouette teal -->
+        <circle cx="100" cy="82" r="34" fill="#2b9ea3"/>
+        <!-- shoulders dark -->
+        <path d="M50 160 Q100 120 150 160 L160 180 L40 180 Z" fill="#4a4a4a"/>
+        <!-- small grid marks -->
+        <line x1="30" y1="10" x2="30" y2="20" stroke="#888" stroke-width="1"/>
+        <line x1="170" y1="10" x2="170" y2="20" stroke="#888" stroke-width="1"/>
+        <line x1="10" y1="100" x2="20" y2="100" stroke="#888" stroke-width="1"/>
+        <line x1="180" y1="100" x2="190" y2="100" stroke="#888" stroke-width="1"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- geometric bar -->
+  <div class="geo-bar"></div>
+
+  <!-- contact strip -->
+  <div class="contact-strip">
+    <div class="item">
+      <span class="icon">
+        <svg viewBox="0 0 24 24"><path d="M6.6 10.8c2.5 4.9 6.8 9.2 11.7 11.7l2.5-2.5c.3-.3.8-.4 1.1-.2 1.2.5 2.5.8 3.9.8.6 0 1 .4 1 1v3.5c0 .6-.4 1-1 1C9.7 24 0 14.3 0 2c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.3 2.6.8 3.9.1.3 0 .8-.2 1.1l-2.5 2.8z"/></svg>
+      </span>
+      {{phone}}
+    </div>
+    <span class="sep">｜</span>
+    <div class="item">
+      <span class="icon">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      </span>
+      {{email}}
+    </div>
+    <span class="sep">｜</span>
+    <div class="item">
+      <span class="icon">
+        <svg viewBox="0 0 24 24"><path d="M12 .5C5.4.5 0 5.9 0 12.5c0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2 1-.3 2-.4 3-.4s2 .1 3 .4c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6C20.6 22.3 24 17.8 24 12.5 24 5.9 18.6.5 12 .5z"/></svg>
+      </span>
+      {{github_url}}
+    </div>
+  </div>
+
+  <!-- MAIN 3 COLUMNS -->
+  <div class="main">
+
+    <!-- ========= LEFT COLUMN ========= -->
+    <div class="col">
+
+      <!-- 联系方式 -->
+      <div class="sec">
+        <div class="sec-title left-dot">
+          <span class="dot"></span>联系方式
+        </div>
+        <div class="item-row">
+          <span class="diamond" style="background:#888"></span>
+          <span>{{email}}</span>
+        </div>
+        <div class="item-row">
+          <span class="diamond" style="background:#888"></span>
+          <span>{{github_url}}</span>
+        </div>
+      </div>
+
+      <!-- 核心经历 (corrupted in PNG, use core summary) -->
+      <div class="sec">
+        <div class="sec-title left-dot">
+          <span class="dot"></span>核心经历
+        </div>
+        <div class="item-row">
+          <span class="diamond" style="background:#888"></span>
+          <span>长期深耕大模型底层研发、多模态视觉与工业AI全栈落地，具备算法-工程-部署端到端能力</span>
+        </div>
+        <div class="divider-line"></div>
+      </div>
+
+      <!-- 教育背景 -->
+      <div class="sec">
+        <div class="sec-title">
+          <span class="dot"></span>教育背景
+        </div>
+        <div class="item-row">
+          <span class="diamond"></span>
+          <span><b>{{education.0.school}}</b><br>{{education.0.detail}}</span>
+        </div>
+        <div class="sublist">
+          <div class="sub">{{education.1.school}}｜{{education.1.detail}}</div>
+          <div class="sub">竞赛荣誉</div>
+          <div class="sub">{{honors.0.name}}{{honors.0.detail}}两次</div>
+        </div>
+      </div>
+
+      <div class="divider-line"></div>
+
+      <!-- 竞赛技能 -->
+      <div class="sec">
+        <div class="sec-title">
+          <span class="dot"></span>竞赛技能
+        </div>
+        <div class="item-row">
+          <span class="diamond"></span>
+          <span><b>{{skills.0.name}}</b>｜{{skills.0.extra}}｜{{skills.1.name}}</span>
+        </div>
+        <div class="sublist">
+          <div class="sub">工业通信协议</div>
+          <div class="sub">{{skills.2.name}}</div>
+          <div class="sub">数据库与数据沉淀基建</div>
+        </div>
+      </div>
+
+      <div class="divider-line"></div>
+
+      <!-- 实习技能 -->
+      <div class="sec">
+        <div class="sec-title">
+          <span class="dot"></span>实习技能
+        </div>
+        <div class="item-row">
+          <span class="diamond"></span>
+          <span><b>{{skills.0.name}}</b>｜{{skills.0.extra}}｜{{skills.1.name}}｜工业通信协议</span>
+        </div>
+        <div class="sublist">
+          <div class="sub">Linux与云原生技术难点</div>
+          <div class="sub">数据沉淀与DevOps</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========= MIDDLE COLUMN ========= -->
+    <div class="col">
+
+      <!-- 核心标签 -->
+      <div class="sec">
+        <div class="tag-intro">
+          <span class="dot"></span>
+          <div class="text">
+            LLM底层架构<span class="sep">｜</span>ViT多模态视觉<span class="sep">｜</span>工业高并发数采<span class="sep">｜</span>云原生架构<span class="sep">｜</span>垂类模型优化
+          </div>
+        </div>
+        <div class="hatch-bar"></div>
+        <div class="teal-strip">
+          大模型｜多模态｜高并发｜云原生
+        </div>
+      </div>
+
+      <!-- 工作经历 -->
+      <div class="sec">
+        <div class="sec-title">
+          <span class="dot"></span>工作经历
+        </div>
+        <div class="item-row">
+          <span class="diamond"></span>
+          <span><b>{{internships.0.org}}</b>｜{{internships.0.role}}<span class="c">｜{{internships.0.date}}</span></span>
+        </div>
+        <div class="item-row" style="margin-top: 24px;">
+          <span class="diamond"></span>
+          <span><b>{{jobs.0.org}}</b>｜{{jobs.0.role}}<span class="c">｜{{jobs.0.date}}</span></span>
+        </div>
+      </div>
+
+      <!-- 项目经历 -->
+      <div class="sec">
+        <div class="sec-title">
+          <span class="dot"></span>项目经历
+        </div>
+        <div class="item-row">
+          <span class="diamond"></span>
+          <span><b>{{projects.0.org}}</b>｜{{projects.0.name}}<br><span class="c">{{projects.0.date}}</span></span>
+        </div>
+        <div class="item-row">
+          <span class="diamond"></span>
+          <span><b>{{projects.1.org}}</b><br><span class="c">{{projects.1.date}}</span></span>
+        </div>
+        <div class="item-row">
+          <span class="diamond"></span>
+          <span><b>{{projects.2.org}}</b>｜{{projects.2.name}}<span class="c"> {{projects.2.date}}</span></span>
+        </div>
+        <div class="item-row">
+          <span class="diamond"></span>
+          <span><b>{{projects.3.org}}</b>｜{{projects.3.name}}<span class="c"> {{projects.3.date}}</span></span>
+        </div>
+        <div class="item-row">
+          <span class="diamond"></span>
+          <span><b>{{projects.4.org}}</b>｜{{projects.4.name}}<span class="c">｜{{projects.4.date}}</span></span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========= RIGHT COLUMN ========= -->
+    <div class="col">
+
+      <!-- 核心技能 -->
+      <div class="sec">
+        <div class="sec-title">
+          <span class="dot"></span>核心技能
+        </div>
+        <div class="skill-meter">
+          <div class="bar">
+            <div class="node n1">9</div>
+            <div class="node n2">0</div>
+          </div>
+        </div>
+        <div class="skill-labels">
+          <span>时间对齐</span>
+          <span>项目项目</span>
+        </div>
+
+        <!-- tag cloud -->
+        <div class="tags">
+          <div class="tag filled">时间对齐</div>
+          <div class="tag filled">自我标签</div>
+          <div class="tag">核心技能</div>
+          <div class="tag">开源项目</div>
+          <div class="tag">竞赛标准</div>
+          <div class="tag">全赛标准</div>
+          <div class="tag">全赛信息</div>
+          <div class="tag">精进系统</div>
+          <div class="tag">精进技术</div>
+          <div class="tag">实践系统</div>
+        </div>
+      </div>
+
+      <!-- 自我评价 -->
+      <div class="sec">
+        <div class="sec-title" style="justify-content: flex-start;">
+          <span style="font-size: 34px; font-weight: 800; color: #222;">自我评价</span>
+        </div>
+        <div class="self-eval">
+          {{self_eval.0.text}}。兼具算法建模、底层工程开发与云原生部署能力，可独立攻坚核心技术难点，也能配合团队推进大型商业化项目，适配核心攻坚与团队协作双重场景。
+        </div>
+      </div>
+
+      <!-- repo links -->
+      <div class="sec">
+        <div class="repo-list">
+          <div class="repo-link">
+            <b>{{repos.0.name}}</b><span class="sep">/</span><span class="url">https://{{repos.0.url}}</span>
+          </div>
+          <div class="repo-link">
+            <b>{{repos.1.name}}</b><span class="sep">/</span><span class="url">https://{{repos.1.url}}</span>
+          </div>
+          <div class="repo-link">
+            <b>{{repos.2.name}}</b><span class="sep">/</span><span class="url">https://{{repos.2.url}}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="bottom-bar"></div>
+
+</div>
+</div>
+
+<script>
+(function () {
+  var scaler = document.getElementById("scaler");
+  function fit() {
+    var s = Math.min(1, document.documentElement.clientWidth / 1760);
+    scaler.style.zoom = s;
+  }
+  window.addEventListener("resize", fit);
+  fit();
+})();
+</script>
+
+</body>
+</html>

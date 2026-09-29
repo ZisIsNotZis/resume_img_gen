@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>{{name}} 个人简历 (7)</title>
+<style>
+  :root {
+    --paper: #fefefb;
+    --ink: #24272a;
+    --teal: #288c9b;
+    --teal-dark: #207988;
+    --slate: #484947;
+    --muted: #8a9090;
+    --hair: #d9d9d2;
+  }
+  html, body { width: 100%; margin: 0; padding: 0; }
+  body {
+    font-family: "Noto Sans CJK SC", "Noto Sans SC", sans-serif;
+    background: #e8e6df;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  #scaler {
+    width: 1760px; height: 2464px;
+    position: relative;
+    background: var(--paper);
+    overflow: hidden;
+  }
+
+  #page { background: var(--paper); width: 100%; height: 100%; }
+
+  /* header */
+  .header { padding: 36px 80px 22px 80px; display: flex; justify-content: space-between; align-items: flex-start; }
+  .name {
+    font-size: 140px;
+    font-weight: 900;
+ color: var(--ink); letter-spacing: 4px; line-height: 1;
+    margin-top: 10px;
+  }
+  .art-wrap {
+    position: relative;
+ width: 460px;
+ height: 380px;
+  }
+  /* decorative line-art: concentric rects + circles */
+  .line-art {
+ position: absolute;
+ top: 0; right: 0;
+ width: 420px;
+ height: 360px;
+ border: 2px solid var(--hair);  }
+  .line-art .r1 { position: absolute; top: 30px; left: 40px; width: 340px; height: 300px; border: 1.5px solid var(--hair); }
+  .line-art .r2 { position: absolute; top: 65px; left: 75px; width: 270px; height: 230px; border: 1px solid var(--hair); opacity: .7; }
+  .line-art .c1 { position: absolute; top: 90px; right: 60px; width: 150px; height: 150px; border: 1.5px solid var(--hair); border-radius: 50%; }
+  .line-art .c2 { position: absolute; top: 120px; right: 90px; width: 90px; height: 90px; border: 1px solid var(--hair); border-radius: 50%; opacity: .7; }
+  .line-art .c3 { position: absolute; bottom: 30px; left: 70px; width: 60px; height: 60px; border: 1px solid var(--hair); border-radius: 50%; opacity: .6; }
+  .line-art .dot { position: absolute; width: 10px; height: 10px; background: var(--muted); border-radius: 50%; }
+  .line-art .d1 { top: -5px; left: -5px; }
+  .line-art .d2 { bottom: -5px; right: -5px; }
+  .line-art .d3 { top: 20px; right: 40px; }
+
+  .art-card {
+ position: absolute;
+ top: 100px; left: 0;
+ width: 280px;
+ background: #fff;
+ padding: 22px 26px;
+ border-radius: 6px;
+ box-shadow: 0 6px 20px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+ z-index: 2;
+  }
+  .art-card .teal-dashes { display: flex; gap: 8px; margin-bottom: 10px; }
+  .art-card .teal-dashes i {
+ display: inline-block;
+ width: 22px;
+ height: 4px;
+ background: var(--teal);
+ border-radius: 2px;
+  }
+  .art-card .line1 {
+ font-size: 33px;
+ font-weight: 900;
+ color: var(--ink);
+ line-height: 1.3;
+ white-space: nowrap;
+  }
+  .art-card .line2 {
+ font-size: 33px;
+ font-weight: 900;
+ color: var(--ink);
+ line-height: 1.3;
+ white-space: nowrap;
+  }
+  .art-card .underline {
+ width: 60px;
+ height: 3px;
+ background: var(--muted);
+ margin-top: 14px;
+ border-radius: 2px;
+  }
+
+  /* 求职定位 */
+  .positioning { padding: 6px 80px 22px; }
+  .positioning .label {
+ font-size: 34px;
+ color: var(--muted);
+ font-weight: 600;
+ margin-bottom: 10px;
+  }
+  .positioning .tags {
+ font-size: 44px;
+ font-weight: 900;
+ color: var(--ink);
+ letter-spacing: 2px;
+  }
+  .positioning .tags .sep {
+ color: var(--teal);
+ margin: 0 10px;
+ font-weight: 900;
+  }
+
+  /* two-tone ribbon */
+  .ribbon {
+ position: relative; width: 100%; height: 56px; margin: 6px 0 10px;
+  }
+  .ribbon .left {
+ position: absolute; left: 0; top: 0; width: 58%; height: 100%;
+ background: var(--teal);
+ clip-path: polygon(0 0, 100% 0, calc(100% - 60px) 100%, 0 100%);
+ }
+  .ribbon .right {
+ position: absolute; right: 0; top: 0; width: 47%; height: 100%;
+ background: var(--slate);
+ clip-path: polygon(60px 0, 100% 0, 100% 100%, 0 100%);
+ }
+
+ /* contact row */
+ .contact-row {
+ display: flex; align-items: center; gap: 16px;
+ padding: 16px 80px 6px;
+ font-size: 38px;
+ font-weight: 700;
+ }
+ .contact-row .phone { color: var(--ink); font-weight: 800; }
+ .contact-row .divv { color: var(--muted); font-weight: 400; margin: 0 6px; }
+ .contact-row .chev { color: var(--teal); font-size: 36px; margin-right: 4px; }
+ .contact-row .email, .contact-row .github { color: var(--teal); font-weight: 800; }
+ .contact-row .sep { color: var(--teal); margin: 0 6px; font-weight: 800; }
+ .hairline { height: 1px; background: var(--hair); margin: 0 80px; }
+
+ /* 3 columns */
+ .cols { display: grid; grid-template-columns: minmax(0, 0.28fr) minmax(0, 0.34fr) minmax(0, 0.34fr); padding: 16px 0 0; }
+ .col { padding: 0 30px; border-right: 1px solid var(--hair); }
+ .col:last-child { border-right: none; }
+ .col:first-child { padding-left: 80px; }
+ .col:last-child { padding-right: 80px; }
+
+ /* column 1 compression so all 5 sections fit the page */
+ .col:first-child .sec-head h2 { font-size: 36px; }
+ .col:first-child .sec-head .icon { width: 28px; height: 28px; }
+ .col:first-child .sec-head { margin-bottom: 8px; }
+ .col:first-child .sec-head .icon { width: 24px; height: 24px; }
+ .col:first-child .sec-head .icon::after { inset: -3px; }
+ .col:first-child .items li { font-size: 26px; padding: 2px 0 2px 20px; line-height: 1.28; }
+ .col:first-child .items li.diamond::before { top: 12px; width: 10px; height: 10px; }
+ .col:first-child .items li.dot::before { top: 12px; }
+ .col:first-child .items li.ring::before { top: 9px; }
+ .col:first-child .info-line { font-size: 28px; }
+ .col:first-child .col-hair { margin: 6px 0; }
+
+ /* section header with icon */
+ .sec-head {
+ display: flex; align-items: center;
+ gap: 16px;
+ margin-bottom: 12px;
+ }
+ .sec-head .icon {
+ width: 34px; height: 34px;
+ border-radius: 50%;
+ background: var(--ink);
+ position: relative;
+ flex: none;
+ }
+ .sec-head .icon::after {
+ content: "";
+ position: absolute;
+ inset: -4px;
+ border: 1.5px solid var(--teal);
+ border-radius: 50%;
+ }
+ .sec-head h2 {
+ font-size: 40px;
+ font-weight: 900;
+ color: var(--ink);
+ letter-spacing: 1px;
+ }
+
+ /* generic list items */
+ .items { list-style: none; }
+ .items li {
+ font-size: 30px;
+ line-height: 1.38;
+ color: var(--ink);
+ padding: 3px 0 3px 24px;
+ position: relative;
+ font-weight: 500;
+ }
+ .items li b { font-weight: 800; }
+ .items li.diamond::before {
+ content: "";
+ position: absolute;
+ left: 2px; top: 16px;
+ width: 12px; height: 12px;
+ background: var(--teal);
+ transform: rotate(45deg);
+ }
+ .items li.ring::before {
+ content: "";
+ position: absolute;
+ left: 0; top: 12px;
+ width: 14px; height: 14px;
+ border: 2.5px solid var(--teal);
+ border-radius: 50%;
+ }
+ .items li.dot::before {
+ content: "";
+ position: absolute;
+ left: 6px; top: 16px;
+ width: 8px; height: 8px;
+ background: var(--muted);
+ border-radius: 50%;
+ }
+ .items li .date { color: var(--teal); font-weight: 800; white-space: nowrap; }
+ .items li .teal { color: var(--teal); font-weight: 700; }
+ .items li .muted { color: var(--muted); font-weight: 500; }
+ .muted-line { color: var(--muted); font-weight: 500; }
+
+ /* col1: small sub-headers (email/globe rows) */
+ .info-line {
+ display: flex; align-items: center;
+ gap: 12px;
+ font-size: 32px;
+ padding: 4px 0;
+ color: var(--ink);
+ }
+ .info-line .icn {
+ width: 24px; height: 24px;
+ flex: none;
+ }
+
+ .col-hair { height: 1px; background: var(--hair); margin: 14px 0; }
+
+ /* column 2: work/projects */
+ .work-entry { margin-bottom: 8px; }
+ .work-entry .title {
+ font-size: 34px; font-weight: 800;
+ color: var(--ink);
+ line-height: 1.4;
+ }
+ .work-entry .title .date { color: var(--teal); font-weight: 700; white-space: nowrap; }
+
+ /* column 2 hatched divider */
+ .hatch-div {
+ height: 24px;
+ background: repeating-linear-gradient(-55deg, var(--hair) 0 1.5px, transparent 1.5px 7px);
+ margin: 8px 0 12px;
+ }
+
+ /* teal banner */
+ .teal-banner {
+ min-height: 90px;
+ padding: 12px 20px;
+ display: flex; flex-wrap: wrap; align-items: center; justify-content: center; row-gap: 2px;
+ background: var(--teal);
+ color: #fff;
+ font-size: 28px;
+ font-weight: 800;
+ letter-spacing: 1px;
+ line-height: 1.4;
+ text-align: center;
+ margin: 4px 0 16px;
+ }
+ .teal-banner .sep { margin: 0 10px; opacity: .8; }
+ .teal-banner .seg { white-space: nowrap; }
+
+ /* column 3: skill progress */
+ .skill-progress {
+ position: relative; height: 20px;
+ margin: 8px 0 14px;
+ display: flex; align-items: center;
+ }
+ .skill-progress .bar {
+ width: 100%; height: 8px;
+ background: var(--hair);
+ border-radius: 4px;
+ position: relative;
+ overflow: visible;
+ }
+ .skill-progress .fill {
+ width: 85%; height: 100%;
+ background: var(--teal);
+ border-radius: 4px;
+ }
+ .skill-progress .node {
+ position: absolute;
+ top: 50%;
+ transform: translateY(-50%);
+ width: 24px; height: 24px;
+ background: #fff;
+ border: 2px solid var(--teal);
+ border-radius: 50%;
+ display: flex; align-items: center; justify-content: center;
+ font-size: 14px;
+ font-weight: 900;
+ color: var(--teal);
+ }
+ .skill-progress .n1 { left: 30%; }
+ .skill-progress .n2 { right: 10%; }
+
+ .skill-labels {
+ display: flex;
+ justify-content: space-between;
+ font-size: 24px;
+ color: var(--muted);
+ margin-bottom: 16px;
+ }
+
+ /* pill grid */
+ .pill-grid {
+ display: grid;
+ grid-template-columns: 1fr 1fr;
+ gap: 14px 14px;
+ margin-bottom: 10px;
+ }
+ .pill {
+ height: 64px;
+ display: flex; align-items: center; justify-content: center;
+ border: 2.5px solid var(--teal);
+ border-radius: 32px;
+ color: var(--teal);
+ font-size: 30px;
+ font-weight: 800;
+ letter-spacing: 1px;
+ }
+ .pill.solid {
+ background: var(--teal);
+ color: #fff;
+ border-color: var(--teal);
+ }
+
+ .open-source h2 {
+ font-size: 40px;
+ font-weight: 900;
+ color: var(--ink);
+ margin: 20px 0 10px;
+ }
+ .open-source p {
+ font-size: 30px;
+ line-height: 1.5;
+ color: var(--ink);
+ font-weight: 500;
+ margin-bottom: 14px;
+ }
+ .repo-row {
+ display: block;
+ font-size: 32px;
+ padding: 10px 0;
+ border-bottom: 1px solid var(--hair);
+ }
+ .repo-row:last-child { border-bottom: none; }
+ .repo-row .name { font-weight: 800; color: var(--ink); font-size: 32px; }
+ .repo-row .slash { color: var(--muted); font-weight: 500; }
+ .repo-row .url { display: block; color: var(--teal); font-weight: 700; font-size: 23px; margin-top: 2px; white-space: nowrap; }
+
+ /* footer */
+ .footer {
+ position: absolute;
+ left: 0; right: 0; bottom: 0;
+ height: 12px;
+ background: var(--teal);
+ }
+
+  @media print {
+    @page { size: A4 portrait; margin: 0; }
+    html, body { margin: 0; padding: 0; }
+    #scaler { zoom: 0.451 !important; }
+  }
+</style>
+</head>
+<body>
+<div id="scaler">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="name">{{name}}</div>
+    <div class="art-wrap">
+      <div class="line-art">
+        <div class="r1"></div>
+        <div class="r2"></div>
+        <div class="c1"></div>
+        <div class="c2"></div>
+        <div class="c3"></div>
+        <div class="dot d1"></div>
+        <div class="dot d2"></div>
+        <div class="dot d3"></div>
+      </div>
+      <div class="art-card">
+        <div class="teal-dashes"><i></i><i></i></div>
+        <div class="line1">经验丰富｜技术全面</div>
+        <div class="line2">全面｜长期深耕</div>
+        <div class="underline"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 求职定位 -->
+  <div class="positioning">
+    <div class="label">求职研发：</div>
+    <div class="tags">算法研发<span class="sep">｜</span>工程落地<span class="sep">｜</span>部署运维<span class="sep">｜</span>开源沉淀</div>
+  </div>
+
+  <!-- two-tone ribbon -->
+  <div class="ribbon">
+    <div class="left"></div>
+    <div class="right"></div>
+  </div>
+
+  <!-- contact row -->
+  <div class="contact-row">
+    <span class="phone">{{phone}}</span>
+    <span class="divv">｜</span>
+    <span class="chev">《</span><span class="email">{{email}}</span>
+    <span class="sep">｜</span>
+    <span class="chev">《</span><span class="github">{{github_url}}</span>
+  </div>
+  <div class="hairline"></div>
+
+  <!-- THREE COLUMNS -->
+  <div class="cols">
+
+    <!-- LEFT COLUMN (28%) -->
+    <div class="col">
+
+      <div class="sec-head">
+        <div class="icon"></div>
+        <h2>教育背景</h2>
+      </div>
+      <div class="info-line"><span class="icn">✉</span> {{email}}</div>
+      <div class="info-line"><span class="icn">🌐</span> {{github_url}}</div>
+
+      <div class="col-hair"></div>
+
+      <div class="sec-head">
+        <div class="icon"></div>
+        <h2>核心经历</h2>
+      </div>
+      <ul class="items">
+        <li class="diamond">长期深耕大模型底层、多模态推理、工业AI落地</li>
+        <li class="diamond">持续保持高强度自主学习与开源沉淀</li>
+      </ul>
+
+      <div class="col-hair"></div>
+
+      <div class="sec-head">
+        <div class="icon"></div>
+        <h2>竞赛技能</h2>
+      </div>
+      <ul class="items">
+        <li class="diamond">{{education.0.school}}｜{{education.0.detail}}</li>
+        <li class="dot">{{education.1.school}}｜{{education.1.detail}}</li>
+        <li class="dot">竞赛荣誉</li>
+        <li class="dot">{{honors.0.name}}{{honors.0.detail}}两次</li>
+      </ul>
+
+      <div class="col-hair"></div>
+
+      <div class="sec-head">
+        <div class="icon"></div>
+        <h2>实习技能</h2>
+      </div>
+      <ul class="items">
+        <li class="diamond">{{skills.0.name}}｜{{skills.0.extra}}｜{{skills.1.name}}</li>
+        <li class="dot">工业通信协议</li>
+        <li class="dot">{{skills.2.name}}</li>
+        <li class="dot">{{skills.2.extra}}</li>
+      </ul>
+
+      <div class="col-hair"></div>
+
+      <div class="sec-head">
+        <div class="icon"></div>
+        <h2>联系方式</h2>
+      </div>
+      <ul class="items">
+        <li class="diamond">长期跟进大模型底层、多模态推理、工业AI与二进制逆向方向</li>
+        <li class="dot">Linux与云原生技术难点攻坚</li>
+        <li class="dot">端到端数据闭环与DevOps</li>
+      </ul>
+
+    </div>
+
+    <!-- MIDDLE COLUMN (34%) -->
+    <div class="col">
+
+      <div class="sec-head">
+        <div class="icon"></div>
+        <h2>工作经历</h2>
+      </div>
+      <div class="hatch-div"></div>
+      <div class="teal-banner">
+        <span class="seg">大模型底层研发</span><span class="sep">｜</span><span class="seg">多模态大模型</span><span class="sep">｜</span><span class="seg">工业AI全栈落地</span>
+      </div>
+
+      <div class="work-entry">
+        <ul class="items">
+          <li class="diamond"><b>{{internships.0.org}}</b>｜{{internships.0.role}}｜<span class="date">{{internships.0.date}}</span></li>
+          <li class="ring"><b>{{jobs.0.org}}</b>｜{{jobs.0.role}}｜<span class="date">{{jobs.0.date}}</span></li>
+        </ul>
+      </div>
+
+      <div class="col-hair"></div>
+
+      <div class="sec-head">
+        <div class="icon"></div>
+        <h2>项目经历</h2>
+      </div>
+      <ul class="items">
+        <li class="diamond"><b>{{projects.0.org}}</b>｜{{projects.0.name}} ｜ <span class="date">{{projects.0.date}}</span></li>
+        <li class="diamond"><b>{{projects.1.org}}</b> ｜ <span class="date">{{projects.1.date}}</span></li>
+        <li class="ring"><b>{{projects.2.org}}</b>｜{{projects.2.name}}｜<span class="date">{{projects.2.date}}</span></li>
+        <li class="ring"><b>{{projects.3.org}}</b>｜{{projects.3.name}}｜<span class="date">{{projects.3.date}}</span></li>
+        <li class="ring"><b>{{projects.4.org}}</b>｜{{projects.4.name}}｜<span class="date">{{projects.4.date}}</span></li>
+      </ul>
+
+    </div>
+
+    <!-- RIGHT COLUMN (34%) -->
+    <div class="col">
+
+      <div class="sec-head">
+        <div class="icon"></div>
+        <h2>核心技能</h2>
+      </div>
+      <div class="skill-progress">
+        <div class="bar">
+          <div class="fill"></div>
+        </div>
+        <div class="node n1">1</div>
+        <div class="node n2">2</div>
+      </div>
+      <div class="skill-labels">
+        <span>时间对齐</span>
+        <span>项目交付</span>
+      </div>
+
+      <div class="pill-grid">
+        <div class="pill">大模型</div>
+        <div class="pill solid">ViT多模态</div>
+        <div class="pill">CUDA优化</div>
+        <div class="pill">云原生</div>
+        <div class="pill">工业协议</div>
+        <div class="pill">数据基建</div>
+        <div class="pill">量化推理</div>
+        <div class="pill">开源项目</div>
+      </div>
+
+      <div class="open-source">
+        <h2>开源项目</h2>
+        <p>熟悉从需求拆解、方案设计、编码实现、系统部署到线上运维的完整研发闭环。</p>
+      </div>
+
+      <div class="repos">
+        <div class="repo-row">
+          <span class="name">{{repos.0.name}}</span>
+          <span class="slash">/</span>
+          <span class="url">https://{{repos.0.url}}</span>
+        </div>
+        <div class="repo-row">
+          <span class="name">{{repos.1.name}}</span>
+          <span class="slash">/</span>
+          <span class="url">https://{{repos.1.url}}</span>
+        </div>
+        <div class="repo-row">
+          <span class="name">{{repos.2.name}}</span>
+          <span class="slash">/</span>
+          <span class="url">https://{{repos.2.url}}</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="footer"></div>
+</div>
+
+<script>
+  (function () {
+    var scaler = document.getElementById("scaler");
+    function fit() {
+      var s = Math.min(1, document.documentElement.clientWidth / 1760);
+      scaler.style.zoom = s;
+    }
+    window.addEventListener("resize", fit);
+    fit();
+  })();
+</script>
+
+</body>
+</html>

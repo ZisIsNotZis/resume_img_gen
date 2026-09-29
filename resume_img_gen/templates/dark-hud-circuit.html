@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>{{name}}｜{{title}} 个人简历</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0c1e26;
+    --bg-panel: rgba(26, 60, 72, 0.55);
+    --bg-panel-2: rgba(20, 48, 58, 0.8);
+    --cyan: #4fe3e0;
+    --cyan-bright: #8ef5ef;
+    --cyan-dim: #2e7a86;
+    --border: rgba(90, 200, 210, 0.45);
+    --text: #eaf7f7;
+    --text-dim: #bfe3e6;
+  }
+
+  html, body { width: 100%; }
+
+  body {
+    font-family: "Noto Sans CJK SC", "Noto Sans SC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* fixed-design canvas, scaled to fit the viewport by the fit() script below */
+  #scaler { width: 1760px; height: 2464px; position: relative; transform-origin: top left; }
+
+  /* ===== background decorations ===== */
+  .bg-layer { position: absolute; inset: 0; pointer-events: none; }
+
+  .corner { position: absolute; width: 120px; height: 120px; border: 6px solid rgba(79, 227, 224, 0.8); }
+  .corner.tl { top: 28px; left: 28px; border-right: none; border-bottom: none; border-radius: 12px 0 0 0; }
+  .corner.br { bottom: 28px; right: 28px; border-left: none; border-top: none; border-radius: 0 0 12px 0; }
+
+  .hatch {
+    position: absolute; height: 14px; opacity: 0.85;
+    background: repeating-linear-gradient(-55deg, var(--cyan) 0 10px, transparent 10px 22px);
+  }
+  .hatch.tr { top: 64px; right: 160px; width: 300px; }
+  .hatch.bl { bottom: 210px; left: 60px; width: 240px; opacity: 0.4; }
+  .hatch.sub { top: 434px; left: 80px; width: 200px; opacity: 0.5; }
+
+  .edge-line-r { position: absolute; right: 20px; top: 500px; width: 8px; height: 700px;
+    background: repeating-linear-gradient(180deg, var(--cyan) 0 26px, transparent 26px 44px); opacity: 0.55; }
+
+  /* ===== page frame ===== */
+  .page {
+    position: absolute; inset: 40px 44px;
+    border: 2px solid rgba(79, 227, 224, 0.35);
+    border-radius: 18px;
+    padding: 34px 52px 40px;
+    background:
+      radial-gradient(900px 500px at 85% 0%, rgba(30, 90, 105, 0.35), transparent 60%),
+      radial-gradient(800px 600px at 0% 100%, rgba(24, 74, 88, 0.3), transparent 60%),
+      linear-gradient(160deg, #0e242d 0%, #0b1d25 55%, #0d222b 100%);
+  }
+
+  /* ===== top bar ===== */
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 44px; }
+  .topbadge {
+    display: flex; align-items: center; gap: 18px;
+    border: 2px solid var(--border); border-radius: 14px;
+    background: rgba(16, 42, 52, 0.8);
+    padding: 14px 34px 14px 20px;
+  }
+  .diamond {
+    width: 26px; height: 26px; background: linear-gradient(135deg, #2fd8d4, #1ea8b8);
+    transform: rotate(45deg); border-radius: 5px;
+    box-shadow: 0 0 12px rgba(79, 227, 224, 0.7);
+  }
+  .topbadge span { font-size: 30px; font-weight: 700; color: var(--text-dim); letter-spacing: 4px; }
+  .a4 { font-size: 44px; font-weight: 800; color: #fff; letter-spacing: 2px; }
+
+  /* ===== header ===== */
+  h1 { font-size: 84px; font-weight: 900; color: #ffffff; text-align: center; letter-spacing: 2px;
+       text-shadow: 0 0 30px rgba(79, 227, 224, 0.25); }
+  .subtitle { font-size: 40px; font-weight: 700; color: #f2fbfb; text-align: center; margin-top: 26px; letter-spacing: 3px; }
+
+  /* ===== contact bar ===== */
+  .contact-wrap { display: flex; align-items: center; gap: 26px; margin: 44px 10px 40px; }
+  .contact {
+    flex: 1; display: flex; align-items: center; gap: 20px;
+    border: 2px solid var(--border); border-radius: 60px;
+    background: rgba(16, 42, 52, 0.75);
+    padding: 18px 36px;
+    white-space: nowrap;
+    box-shadow: 0 0 24px rgba(79, 227, 224, 0.12) inset;
+  }
+  .contact .icon {
+    width: 52px; height: 52px; border-radius: 50%; flex: none;
+    background: linear-gradient(135deg, #35cfd4, #1f96ad);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .contact .icon svg { width: 28px; height: 28px; fill: #062a30; }
+  .contact p { font-size: 29px; font-weight: 700; color: #ffffff; letter-spacing: 0; }
+  .contact .sep { color: var(--cyan); margin: 0 6px; }
+  .arrows { flex: none; display: flex; gap: 2px; }
+  .arrows i {
+    width: 20px; height: 56px; margin-right: 8px;
+    background: linear-gradient(90deg, rgba(79,227,224,0.9), rgba(79,227,224,0.25));
+    clip-path: polygon(0 0, 55% 0, 100% 50%, 55% 100%, 0 100%, 45% 50%);
+  }
+  .arrows i:nth-child(2) { opacity: 0.55; }
+  .arrows i:nth-child(3) { opacity: 0.28; }
+
+  /* ===== columns ===== */
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 64px; position: relative; }
+  .col { display: flex; flex-direction: column; }
+  .col > * + * { margin-top: 26px; }
+  .col.left > * + * { margin-top: 44px; }
+
+  /* divider with circuit nodes between columns */
+  .divider { position: absolute; left: 50%; top: 40px; bottom: 40px; width: 2px;
+    background: linear-gradient(180deg, transparent, rgba(79,227,224,0.35) 12%, rgba(79,227,224,0.35) 88%, transparent); }
+  .divider::before, .divider::after {
+    content: ""; position: absolute; left: -5px; width: 12px; height: 12px; border-radius: 50%;
+    background: rgba(79,227,224,0.75); box-shadow: 0 0 8px rgba(79,227,224,0.6);
+  }
+  .divider::before { top: 0.5%; } .divider::after { bottom: 0.5%; }
+
+  /* ===== section header ===== */
+  .sec { display: flex; align-items: center; gap: 20px; }
+  .sec .tag {
+    background: linear-gradient(100deg, #3fd9da 0%, #23a8bc 100%);
+    color: #07272d; font-size: 38px; font-weight: 900; letter-spacing: 3px;
+    padding: 12px 44px 12px 30px;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 26px) 100%, 0 100%);
+    box-shadow: 0 0 18px rgba(79, 227, 224, 0.4);
+  }
+  .sec .trail { flex: 1; display: flex; align-items: center; gap: 10px; }
+  .sec .trail .line { flex: 1; height: 2px; background: linear-gradient(90deg, rgba(79,227,224,0.55), transparent); }
+  .sec .trail .dots { display: flex; gap: 8px; }
+  .sec .trail .dots i { width: 9px; height: 9px; border-radius: 50%; background: rgba(79,227,224,0.7); }
+  .sec .trail .dots i:nth-child(2) { opacity: .6; } .sec .trail .dots i:nth-child(3) { opacity: .35; }
+
+  .block { display: flex; flex-direction: column; }
+  .block .sec { margin-bottom: 22px; }
+
+  /* ===== cards ===== */
+  .card {
+    background: var(--bg-panel);
+    border: 2px solid rgba(90, 200, 210, 0.35);
+    border-radius: 14px;
+    padding: 20px 28px;
+    font-size: 31px; line-height: 1.5; color: var(--text);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  }
+  .card + .card { margin-top: 18px; }
+  .card b { color: #ffffff; font-weight: 800; }
+  .card .c { color: var(--cyan); font-weight: 800; white-space: nowrap; }
+  .card ul { list-style: none; }
+  .card li { position: relative; padding-left: 34px; }
+  .card li + li { margin-top: 14px; }
+  .card li::before {
+    content: ""; position: absolute; left: 4px; top: 0.62em;
+    width: 12px; height: 12px; border-radius: 3px; transform: rotate(45deg);
+    background: var(--cyan); box-shadow: 0 0 8px rgba(79,227,224,0.8);
+  }
+
+  /* highlight card */
+  .card.highlight {
+    background: linear-gradient(105deg, #6ff0e8 0%, #3ecfda 55%, #2ab6c9 100%);
+    border: none; color: #06262c;
+    font-size: 29px; font-weight: 800; line-height: 1.6; letter-spacing: 0.5px;
+    box-shadow: 0 0 34px rgba(79, 227, 224, 0.45);
+    padding: 24px 30px;
+  }
+  .card.highlight .d { color: #0a3d46; opacity: 0.55; font-weight: 900; }
+
+  /* skill pill rows */
+  .skill { display: flex; align-items: center; gap: 16px;
+    background: var(--bg-panel-2); border: 2px solid rgba(90, 200, 210, 0.35);
+    border-radius: 12px; padding: 18px 26px; font-size: 30px; }
+  .skill::before { content: ""; width: 11px; height: 11px; flex: none; border-radius: 50%;
+    background: var(--cyan); box-shadow: 0 0 8px rgba(79,227,224,0.8); }
+  .skill b { color: #fff; font-weight: 800; }
+  .skill .d { color: var(--cyan); font-weight: 800; margin: 0 8px; }
+  .skill .dim { color: var(--text-dim); font-weight: 700; }
+  .skill + .skill { margin-top: 16px; }
+
+  /* repo chips */
+  .repos { display: flex; flex-direction: column; gap: 14px; margin-top: 18px; }
+  .repo {
+    background: var(--bg-panel-2); border: 2px solid rgba(90, 200, 210, 0.35);
+    border-radius: 10px; padding: 13px 24px;
+    font-size: 21px; font-weight: 700; color: var(--text-dim);
+    overflow-wrap: break-word; white-space: nowrap;
+  }
+  .repo b { color: #ffffff; }
+  .repo .d { color: var(--cyan); margin: 0 10px; }
+  .repo span.u { color: var(--cyan); }
+
+  /* bottom watermark strip */
+  .bottom-strip { position: absolute; left: 44px; right: 44px; bottom: 26px;
+    display: flex; justify-content: space-between; align-items: center; }
+  .bottom-strip .bar { height: 10px; flex: 1; margin: 0 30px;
+    background: repeating-linear-gradient(-55deg, rgba(79,227,224,0.55) 0 12px, transparent 12px 26px);
+    border-radius: 4px; }
+  .bottom-strip .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 10px rgba(79,227,224,0.8); }
+
+  /* print: scale the 1760px canvas onto one A4 page */
+  @media print {
+    @page { size: A4 portrait; margin: 0; }
+    body { overflow: visible; }
+    #scaler { zoom: 0.451 !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div id="scaler">
+  <div class="bg-layer">
+    <div class="corner tl"></div>
+    <div class="corner br"></div>
+    <div class="hatch tr"></div>
+    <div class="hatch bl"></div>
+    <div class="hatch sub"></div>
+    <div class="edge-line-r"></div>
+  </div>
+
+  <div class="page">
+
+    <div class="topbar">
+      <div class="topbadge"><div class="diamond"></div><span>个人信息</span></div>
+      <div class="a4">A4</div>
+    </div>
+
+    <h1>{{name}}｜{{title}}</h1>
+    <div class="subtitle">{{subtitle}}</div>
+
+    <div class="contact-wrap">
+      <div class="contact">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z"/></svg></div>
+        <p>联系电话<span class="sep">｜</span>{{phone}}<span class="sep">｜</span>{{email}} / {{github_url}}</p>
+      </div>
+      <div class="arrows"><i></i><i></i><i></i></div>
+    </div>
+
+    <div class="cols">
+      <div class="divider"></div>
+
+      <!-- ===== LEFT ===== -->
+      <div class="col left">
+
+        <div class="block">
+          <div class="sec"><div class="tag">核心标签</div><div class="trail"><div class="line"></div><div class="dots"><i></i><i></i><i></i></div></div></div>
+          <div class="card highlight">{{core_tags_line}}</div>
+        </div>
+
+        <div class="block">
+          <div class="sec"><div class="tag">教育背景</div><div class="trail"><div class="line"></div><div class="dots"><i></i><i></i><i></i></div></div></div>
+          <div class="card">
+            <ul>
+              <li><b>{{education.0.school}}</b><span class="c">｜</span>{{education.0.detail}}</li>
+              <li><b>{{education.1.school}}</b><span class="c">｜</span>{{education.1.detail}}</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="sec"><div class="tag">竞赛荣誉</div><div class="trail"><div class="line"></div><div class="dots"><i></i><i></i><i></i></div></div></div>
+          <div class="card">
+            <ul>
+              <li><b>{{honors.0.name}}</b>{{honors.0.detail}}<span class="c">{{honors.0.highlight}}</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="sec"><div class="tag">实习经历</div><div class="trail"><div class="line"></div><div class="dots"><i></i><i></i><i></i></div></div></div>
+          <div class="card">
+            <ul>
+              <li><b>{{internships.0.org}}</b><span class="c">｜</span>{{internships.0.role}}<span class="c">｜</span><span class="c">{{internships.0.date}}</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="sec"><div class="tag">工作经历</div><div class="trail"><div class="line"></div><div class="dots"><i></i><i></i><i></i></div></div></div>
+          <div class="card">
+            <ul>
+              <li><b>{{jobs.0.org}}</b><span class="c">｜</span>{{jobs.0.role}}<span class="c">｜</span><span class="c">{{jobs.0.date}}</span></li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===== RIGHT ===== -->
+      <div class="col">
+
+        <div class="block">
+          <div class="sec"><div class="tag">核心技能</div><div class="trail"><div class="line"></div><div class="dots"><i></i><i></i><i></i></div></div></div>
+          <div class="skill"><span><b>大模型与多模态算法</b><span class="d">｜</span><b>高性能并行编程</b></span></div>
+          <div class="skill"><span><b>Java后端架构</b><span class="d">｜</span><span class="dim">工业通信协议体系</span></span></div>
+          <div class="skill"><span><b>Linux与云原生DevOps</b><span class="d">｜</span><span class="dim">数据库与数据基建</span></span></div>
+        </div>
+
+        <div class="block">
+          <div class="sec"><div class="tag">项目经历</div><div class="trail"><div class="line"></div><div class="dots"><i></i><i></i><i></i></div></div></div>
+          <div class="card">
+            <ul>
+              <li><b>{{projects.0.org}}</b><span class="c">｜</span>{{projects.0.name}}<span class="c">｜</span><span class="c">{{projects.0.date}}</span></li>
+            </ul>
+          </div>
+          <div class="card">
+            <ul>
+              <li><b>{{projects.1.org}}</b><span class="c">｜</span><span class="c">{{projects.1.date}}</span></li>
+            </ul>
+          </div>
+          <div class="card">
+            <ul>
+              <li><b>{{projects.2.org}}</b><span class="c">｜</span>{{projects.2.name}}<span class="c">｜</span><span class="c">{{projects.2.date}}</span></li>
+            </ul>
+          </div>
+          <div class="card">
+            <ul>
+              <li><b>{{projects.4.org}}</b><span class="c">｜</span>{{projects.4.name}}<span class="c">｜</span><span class="c">{{projects.4.date}}</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="sec"><div class="tag">自我评价</div><div class="trail"><div class="line"></div><div class="dots"><i></i><i></i><i></i></div></div></div>
+          <div class="card">
+            <ul>
+              <li>技术底色扎实，<b>{{self_eval.0.text}}</b></li>
+              <li>落地导向务实，<b>{{self_eval.1.text}}</b></li>
+            </ul>
+          </div>
+          <div class="repos">
+            {{#repos}}<div class="repo"><b>{{name}}</b><span class="d">/</span><span class="u">{{url}}</span></div>{{/repos}}
+                                  </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bottom-strip">
+    <div class="dot"></div><div class="bar"></div><div class="dot"></div>
+  </div>
+  </div>
+
+  <script>
+    (function () {
+      var scaler = document.getElementById("scaler");
+      function fit() {
+        var s = Math.min(1, document.documentElement.clientWidth / 1760);
+        scaler.style.zoom = s;
+      }
+      window.addEventListener("resize", fit);
+      fit();
+    })();
+  </script>
+
+</body>
+</html>

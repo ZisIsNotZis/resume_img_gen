@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "resume-img-gen"
+version = "0.1.0"
+description = "Generate resume HTML, PNG, and PDF from structured data and reusable templates."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "LGPL-3.0-or-later" }
+authors = [{ name = "zisisnotzis" }]
+keywords = ["resume", "cv", "html", "pdf", "png", "template"]
+
+[project.scripts]
+resume-img-gen = "resume_img_gen.cli:main"
+
+[tool.setuptools]
+packages = ["resume_img_gen"]
+
+[tool.setuptools.package-data]
+resume_img_gen = ["templates/*.html", "resume.css"]

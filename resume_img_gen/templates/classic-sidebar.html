@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>{{name}}｜{{title}} 个人简历</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-page: #f4f6f5;
+    --bg-left: #dde6e5;
+    --bg-right: #edf1f0;
+    --bg-card: #fbfcfc;
+    --accent: #1d7c8e;
+    --accent-dark: #134e58;
+    --accent-light: #2ea0b4;
+    --hero-bg: #5e7170;
+    --text: #1c1e1e;
+    --text-dim: #464c4c;
+    --border: #bdcecb;
+  }
+
+  html, body { width: 100%; }
+
+  body {
+    font-family: "Noto Sans CJK SC", "Noto Sans SC", sans-serif;
+    background: #d0d0d0;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #scaler { width: 1760px; transform-origin: top left; }
+
+  .page {
+    width: 1760px;
+    min-height: 2464px;
+    background: var(--bg-page);
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 520px) minmax(0, 1fr);
+  }
+
+  /* decorative floating shapes (icon placeholders) */
+  .deco { position: absolute; border-radius: 50%; opacity: 0.55; pointer-events: none; }
+  .deco.d1 { width: 160px; height: 160px; left: 960px; top: 380px;
+    background: radial-gradient(circle at 35% 30%, #a8c9c8, #3e5e60); }
+  .deco.d2 { width: 120px; height: 120px; left: 1340px; top: 1450px;
+    background: radial-gradient(circle at 35% 30%, #b4cfcf, #446060); }
+  .deco.d3 { width: 100px; height: 100px; left: 800px; top: 1620px;
+    background: radial-gradient(circle at 35% 30%, #a8c9c8, #3e5e60); }
+  .deco.d4 { width: 80px; height: 80px; left: 1420px; top: 820px;
+    background: radial-gradient(circle at 35% 30%, #b8cfce, #4a6567); opacity: 0.7; }
+  .deco.d5 { width: 70px; height: 70px; left: 700px; top: 1900px;
+    background: radial-gradient(circle at 35% 30%, #adc8c8, #3d5c5e); opacity: 0.6; }
+  .deco.d6 { width: 60px; height: 60px; left: 1520px; top: 2040px;
+    background: radial-gradient(circle at 35% 30%, #b8cfce, #4a6567); opacity: 0.5; }
+
+  /* ===== LEFT ===== */
+  .col-left {
+    background: var(--bg-left);
+    padding: 60px 40px 80px;
+    display: flex; flex-direction: column; gap: 34px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .name-card {
+    text-align: center;
+    padding: 30px 10px 40px;
+    border-bottom: 3px solid var(--accent);
+  }
+  .name-card h1 {
+    font-size: 58px; font-weight: 900; color: var(--accent-dark);
+    letter-spacing: 6px;
+  }
+  .name-card .sub-cn {
+    font-size: 24px; font-weight: 700; color: var(--text);
+    margin-top: 16px; letter-spacing: 2px;
+  }
+  .name-card .sub-en {
+    font-size: 18px; color: var(--text-dim);
+    margin-top: 10px; letter-spacing: 0.5px;
+  }
+
+  .contact-block {
+    display: flex; flex-direction: column; gap: 18px;
+    padding: 10px 6px 0;
+  }
+  .contact-row {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 22px; color: var(--text);
+    line-height: 1.4;
+  }
+  .contact-row .ic {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff; flex: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700;
+  }
+  .contact-row a {
+    color: var(--accent-dark); text-decoration: none;
+    word-break: break-all; font-weight: 600;
+  }
+
+  .sec { display: flex; flex-direction: column; gap: 18px; }
+  .sec-title {
+    font-size: 28px; font-weight: 900; color: var(--accent);
+    letter-spacing: 4px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--accent);
+  }
+
+  .tags-wrap { display: flex; flex-wrap: wrap; gap: 12px; }
+  .tag-pill {
+    background: #ffffff;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    padding: 8px 20px;
+    border-radius: 24px;
+    font-size: 22px; font-weight: 700;
+  }
+
+  .item-group { display: flex; flex-direction: column; gap: 20px; }
+  .item { display: flex; flex-direction: column; gap: 6px; }
+  .item .iname { font-size: 24px; font-weight: 800; color: var(--text); }
+  .item .isub { font-size: 20px; color: var(--text-dim); font-weight: 600; }
+  .item .idate { font-size: 20px; color: var(--accent); font-weight: 700; }
+
+  .skill-list { display: flex; flex-direction: column; gap: 14px; }
+  .skill-line { display: flex; align-items: center; gap: 14px; font-size: 22px; }
+  .skill-line .sname { font-weight: 800; color: var(--text); width: 220px; flex: none; }
+  .skill-line .sbar { flex: 1; height: 10px; background: #c7dede; border-radius: 5px; overflow: hidden; }
+  .skill-line .sfill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); border-radius: 5px; }
+
+  /* ===== RIGHT ===== */
+  .col-right {
+    position: relative;
+    background: var(--bg-right);
+    display: flex; flex-direction: column;
+    z-index: 1;
+  }
+
+  .hero-band {
+    background: linear-gradient(180deg, #748a89 0%, #4c6060 100%);
+    color: #fff;
+    padding: 54px 56px 56px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    position: relative;
+    z-index: 3;
+  }
+  .hero-band .title {
+    font-size: 40px; font-weight: 900;
+    letter-spacing: 7px;
+  }
+  .hero-band .slogan {
+    font-size: 21px; margin-top: 18px;
+    font-weight: 600; letter-spacing: 4px;
+    opacity: 0.92;
+  }
+
+  .right-body {
+    padding: 26px 46px 60px;
+    display: flex; flex-direction: column; gap: 26px;
+    position: relative;
+    z-index: 3;
+  }
+
+  .rsec-title {
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%);
+    color: #fff;
+    padding: 14px 30px;
+    border-radius: 8px;
+    font-size: 28px; font-weight: 900;
+    letter-spacing: 4px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    display: inline-block;
+  }
+
+  .entry {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 26px 22px;
+    display: flex; flex-direction: column; gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .entry + .entry { margin-top: 14px; }
+  .entry-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .entry-head .ename { font-size: 26px; font-weight: 900; color: var(--text); }
+  .entry-head .erole { font-size: 22px; font-weight: 700; color: var(--accent); }
+  .entry-head .edate { font-size: 21px; color: var(--accent); font-weight: 700; white-space: nowrap; }
+  .entry-body {
+    font-size: 21px; line-height: 1.7; color: var(--text-dim);
+    padding-left: 18px;
+    border-left: 3px solid var(--accent);
+    margin-top: 4px;
+  }
+  .entry-body p + p { margin-top: 6px; }
+  .entry-body b { color: var(--text); font-weight: 800; }
+
+  .eval-list { display: flex; flex-direction: column; gap: 16px; padding: 6px 6px 0; }
+  .eval-row {
+    font-size: 23px; line-height: 1.65; color: var(--text);
+    padding-left: 30px; position: relative;
+  }
+  .eval-row::before {
+    content: ""; position: absolute; left: 6px; top: 0.6em;
+    width: 14px; height: 14px; background: var(--accent); transform: rotate(45deg);
+  }
+  .eval-row b { color: var(--accent); font-weight: 900; }
+
+  .repo-group { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+  .repo-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 22px;
+    font-size: 21px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+  }
+  .repo-card b { color: var(--accent); font-weight: 900; margin-right: 12px; }
+  .repo-card a { color: var(--accent); text-decoration: none; word-break: break-all; font-weight: 600; }
+
+  @media print {
+    @page { size: A4 portrait; margin: 0; }
+    body { background: #fff; }
+    #scaler { zoom: 0.451 !important; }
+  }
+</style>
+</head>
+<body>
+<div id="scaler">
+<div class="page">
+
+  <!-- floating decorative image placeholders -->
+  <div class="deco d1"></div>
+  <div class="deco d2"></div>
+  <div class="deco d3"></div>
+  <div class="deco d4"></div>
+  <div class="deco d5"></div>
+  <div class="deco d6"></div>
+
+  <!-- LEFT -->
+  <div class="col-left">
+    <div class="name-card">
+      <h1>{{name}}</h1>
+      <div class="sub-cn">{{title}}</div>
+      <div class="sub-en">AI LLM &amp; Full-Stack Algorithm Engineer</div>
+    </div>
+
+    <div class="contact-block">
+      <div class="contact-row"><div class="ic">☎</div><span>{{phone}}</span></div>
+      <div class="contact-row"><div class="ic">✉</div><a href="mailto:{{email}}">{{email}}</a></div>
+      <div class="contact-row"><div class="ic">⌥</div><a href="{{github_url}}">{{github_short}}</a></div>
+      {{#homepage_url}}<div class="contact-row"><div class="ic">◎</div><a href="{{homepage_url}}">{{homepage_short}}</a></div>{{/homepage_url}}
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">核心标签</div>
+      <div class="tags-wrap">
+        <span class="tag-pill">LLM底层架构</span>
+        <span class="tag-pill">ViT多模态视觉</span>
+        <span class="tag-pill">工业高并发数采</span>
+        <span class="tag-pill">云原生架构</span>
+        <span class="tag-pill">垂类模型优化</span>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">教育背景</div>
+      <div class="item-group">
+        <div class="item">
+          <div class="iname">{{education.0.school}}</div>
+          <div class="isub">物理学 &amp; 计算机科学 · 双学位本科</div>
+          <div class="idate">B.S. Physics &amp; Computer Science</div>
+        </div>
+        <div class="item">
+          <div class="iname">{{education.1.school}}</div>
+          <div class="isub">{{education.1.detail}}专业</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">竞赛荣誉</div>
+      <div class="item-group">
+        <div class="item">
+          <div class="iname">{{honors.0.name}}</div>
+          <div class="isub">{{honors.0.detail}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">实习经历</div>
+      <div class="item-group">
+        <div class="item">
+          <div class="iname">{{internships.0.org}}股份有限公司</div>
+          <div class="isub">{{internships.0.role}}生</div>
+          <div class="idate">2018 年暑假</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">核心技能</div>
+      <div class="skill-list">
+        <div class="skill-line"><span class="sname">大模型与多模态</span><span class="sbar"><span class="sfill" style="width:95%"></span></span></div>
+        <div class="skill-line"><span class="sname">{{skills.0.extra}}</span><span class="sbar"><span class="sfill" style="width:92%"></span></span></div>
+        <div class="skill-line"><span class="sname">Java 后端架构</span><span class="sbar"><span class="sfill" style="width:90%"></span></span></div>
+        <div class="skill-line"><span class="sname">工业通信协议</span><span class="sbar"><span class="sfill" style="width:88%"></span></span></div>
+        <div class="skill-line"><span class="sname">Linux 云原生 DevOps</span><span class="sbar"><span class="sfill" style="width:92%"></span></span></div>
+        <div class="skill-line"><span class="sname">{{skills.2.extra}}</span><span class="sbar"><span class="sfill" style="width:88%"></span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="col-right">
+
+    <div class="hero-band">
+      <div class="title">AI 算法 &amp; 全栈系统工程师</div>
+      <div class="slogan">数据基建 · 算法建模 · 架构设计 · 部署运维</div>
+    </div>
+
+    <div class="right-body">
+
+      <div class="sec">
+        <div class="rsec-title">工作经历</div>
+        <div class="entry">
+          <div class="entry-head">
+            <div><span class="ename">{{jobs.0.org}}</span> <span class="erole">AI 算法 &amp; 全栈系统工程师</span></div>
+            <span class="edate">2019.06 — 至今</span>
+          </div>
+          <div class="entry-body">
+            <p>深耕<b>工业数字化、高并发时序数采、多模态大模型、云原生架构</b>，具备<b>数据基建 — 算法建模 — 架构设计 — 部署运维</b>端到端全栈研发能力。</p>
+            <p>核心参与省级工业互联网平台、半导体视觉检测、重工系统改造等标杆团队项目，负责核心数采引擎迭代、算法落地与集群运维工作。</p>
+            <p>业余持续深耕大模型底层、多模态推理优化、二进制逆向方向，维护 GitHub、HuggingFace 开源项目。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="rsec-title">核心项目经历</div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <div><span class="ename">{{projects.0.org}}</span> <span class="erole">{{projects.0.name}}</span></div>
+            <span class="edate">2023.09 — 至今</span>
+          </div>
+          <div class="entry-body">
+            <p>项目落地长江存储、上海华力等头部晶圆厂量产场景，牵头搭建<b>传统 CV + ViT 多模态大模型</b>双检测方案，负责核心时序工程架构与工业状态机开发。</p>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <div><span class="ename">{{projects.1.org}}</span> <span class="erole">核心架构 / 主后端 / 运维</span></div>
+            <span class="edate">2018.09 — 2020.12</span>
+          </div>
+          <div class="entry-body">
+            <p>作为省级工业互联网标杆 SaaS 平台核心研发成员，负责核心后端、工业数采网关、数据总线与多租户隔离体系核心模块开发。</p>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <div><span class="ename">{{projects.2.org}}</span> <span class="erole">{{projects.2.name}}</span></div>
+            <span class="edate">2021.03 — 2021.12</span>
+          </div>
+          <div class="entry-body">
+            <p>重构异步 S7 高并发数采架构，解决传统商用 SDK 延迟高、吞吐低的痛点，实现<b>10000 次/秒高频稳定采集</b>。</p>
+            <p>开源项目：<b>{{repos.0.name}}</b> — https://{{repos.0.url}}</p>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <div><span class="ename">{{projects.3.org}}</span> <span class="erole">{{projects.3.name}}</span></div>
+            <span class="edate">2017.02 — 2017.09</span>
+          </div>
+          <div class="entry-body">
+            <p>搭建「<b>时序无监督量化建模 + NLP 经验文本匹配</b>」双范式预测性维护架构，实现工业设备实时监控、异常预警、健康度评估、故障方案推荐一体化。</p>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <div><span class="ename">{{projects.4.org}}</span> <span class="erole">{{projects.4.name}}</span></div>
+            <span class="edate">2020.06 — 2021.12</span>
+          </div>
+          <div class="entry-body">
+            <p>参与工业碳足迹全生命周期商业化平台团队迭代，负责工厂建模、碳核算、合规审核、碳交易核心链路开发。</p>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <div><span class="ename">{{projects.5.org}}</span> <span class="erole">游戏王垂类集合式 LLM</span></div>
+            <span class="edate">长期业余预研</span>
+          </div>
+          <div class="entry-body">
+            <p>纯个人技术预研方向，自主搭建游戏王垂类 Agent 进化框架与定制集合式 Transformer 模型，自建数十万级垂类数据集。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="rsec-title">自我评价</div>
+        <div class="eval-list">
+          <div class="eval-row"><b>{{self_eval.0.text}}</b>：长期深耕大模型底层、多模态推理、工业 AI、二进制逆向等前沿领域，兼具算法建模、底层工程开发、云原生部署的端到端研发能力。</div>
+          <div class="eval-row"><b>{{self_eval.1.text}}</b>：既能独立攻坚核心技术难点，也擅长融入团队分工，配合前后端、产品与运维协同推进大型商业化项目。</div>
+        </div>
+        <div class="repo-group">
+          <div class="repo-card"><b>{{repos.0.name}}</b> <a href="https://{{repos.0.url}}">https://{{repos.0.url}}</a></div>
+          <div class="repo-card"><b>{{repos.1.name}}</b> <a href="https://{{repos.1.url}}">https://{{repos.1.url}}</a></div>
+          <div class="repo-card"><b>{{repos.2.name}}</b> <a href="https://{{repos.2.url}}">https://{{repos.2.url}}</a></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+  (function () {
+    var scaler = document.getElementById("scaler");
+    function fit() {
+      var s = Math.min(1, document.documentElement.clientWidth / 1760);
+      scaler.style.zoom = s;
+    }
+    window.addEventListener("resize", fit);
+    fit();
+  })();
+</script>
+</body>
+</html>

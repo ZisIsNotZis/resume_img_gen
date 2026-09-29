@@ -1,0 +1,125 @@
+/* Resume stylesheet for WeasyPrint (A4, CJK) */
+
+@page {
+  size: A4;
+  margin: 16mm 15mm 14mm 15mm;
+  @bottom-center {
+    content: counter(page) " / " counter(pages);
+    font-size: 8pt;
+    color: #9aa4ab;
+  }
+}
+
+html { font-size: 10.5pt; }
+
+body {
+  font-family: "Noto Sans CJK SC", "Noto Sans", sans-serif;
+  color: #1f2328;
+  line-height: 1.55;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ---- headings ---- */
+h1 {
+  font-size: 1.65em;
+  color: #0b3d5c;
+  margin: 0 0 .3em;
+  letter-spacing: .01em;
+}
+
+h2 {
+  font-size: 1.12em;
+  color: #0b5c7a;
+  margin: 1.25em 0 .45em;
+  padding-bottom: .16em;
+  border-bottom: 2px solid #d7e5ec;
+}
+
+h3 {
+  font-size: 1.0em;
+  color: #123c52;
+  margin: .85em 0 .25em;
+}
+
+h2 + h3, h3 + h3 { margin-top: .35em; }
+
+p, ul, ol { margin: .32em 0; }
+ul { padding-left: 1.15em; }
+li { margin: .14em 0; }
+li > ul { margin: .14em 0; }
+
+strong { color: #0b3d5c; }
+
+a { color: #0b5c7a; text-decoration: none; }
+
+hr { border: 0; border-top: 1px solid #e6ecef; margin: 1em 0; }
+
+/* ---- code ---- */
+code {
+  font-family: "Noto Sans Mono CJK SC", monospace;
+  font-size: .88em;
+  background: #f3f6f8;
+  padding: 0 .28em;
+  border-radius: 3px;
+}
+
+pre {
+  background: #f6f8fa;
+  border: 1px solid #e6ecef;
+  border-radius: 6px;
+  padding: .6em .8em;
+  font-size: .85em;
+  white-space: pre-wrap;
+}
+pre code { background: none; padding: 0; }
+
+/* ---- blockquote ---- */
+blockquote {
+  margin: .6em 0;
+  padding: .45em .9em;
+  border-left: 3px solid #8fb8cc;
+  background: #f6fafc;
+  color: #26363f;
+}
+blockquote p { margin: .1em 0; }
+
+/* ---- tables ---- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .8em;
+  margin: .6em 0;
+  table-layout: auto;
+}
+th, td {
+  border: 1px solid #dde6ea;
+  padding: .26em .42em;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+th { background: #eef4f7; color: #14384a; font-weight: 600; }
+tr:nth-child(even) td { background: #fafcfd; }
+
+/* ---- appendix ---- */
+.appendix-note {
+  break-before: page;
+  margin: 0 0 1.2em;
+  padding: .8em 1em;
+  background: #fff8e8;
+  border: 1px solid #f0d9a8;
+  border-radius: 8px;
+  font-size: .95em;
+  color: #7a5a12;
+}
+.appendix-note strong { color: #7a5a12; }
+
+h1.appendix-title {
+  break-before: page;
+  font-size: 1.25em;
+  color: #6b4a00;
+  margin: .2em 0 .6em;
+  padding-bottom: .18em;
+  border-bottom: 2px solid #f0d9a8;
+}

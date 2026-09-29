@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>{{name}}｜简历 (6)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --cream: #f5efdc;
+    --cream-card: #fdfbf2;
+    --gray-card: #e9e8e0;
+    --navy: #1e3a6e;
+    --navy-dark: #142c58;
+    --orange: #e87f2e;
+    --orange-dark: #d46a1e;
+    --muted: #9a958a;
+    --divider: #d6d2c3;
+  }
+  html, body { width: 100%; }
+  body {
+    font-family: "Noto Sans CJK SC", "Noto Sans SC", sans-serif;
+    background: var(--cream);
+    color: var(--navy);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  #scaler {
+    width: 1760px;
+    height: 2464px;
+    position: relative;
+    transform-origin: top left;
+    padding: 90px 100px 80px;
+    background: var(--cream);
+  }
+
+  /* ===== HEADER ===== */
+  .header { display: flex; align-items: center; gap: 60px; margin-bottom: 44px; }
+  .name-block { flex: none; }
+  .name {
+    font-family: "Noto Serif CJK SC", "Noto Serif SC", serif;
+    font-weight: 900;
+    font-size: 130px;
+    color: var(--navy);
+    line-height: 1;
+    letter-spacing: 6px;
+  }
+  .name-underline {
+    width: 180px; height: 10px;
+    background: var(--navy);
+    border-radius: 5px;
+    margin-top: 22px;
+    margin-left: 6px;
+  }
+  .vdivider {
+    width: 3px;
+    height: 180px;
+    background: var(--navy);
+    border-radius: 2px;
+    flex: none;
+    opacity: 0.85;
+  }
+  .header-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .header-tagline {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: 1px;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+  .header-contact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .header-contact .phone { font-weight: 800; }
+  .header-contact .email { font-weight: 700; font-size: 34px; }
+
+  /* ===== 求职定位 banner ===== */
+  .banner { margin: 52px 0 40px; }
+  .banner-top {
+    background: var(--navy);
+    color: #fff;
+    font-size: 44px;
+    font-weight: 900;
+    padding: 32px 48px;
+    border-radius: 14px 14px 0 0;
+    letter-spacing: 4px;
+    height: 110px;
+    display: flex;
+    align-items: center;
+  }
+  .banner-bottom {
+    background: var(--cream-card);
+    color: var(--navy);
+    font-size: 44px;
+    font-weight: 900;
+    padding: 32px 48px;
+    border-radius: 0 0 14px 14px;
+    border: 2px solid var(--divider);
+    border-top: none;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    letter-spacing: 2px;
+    box-shadow: 0 8px 20px rgba(30, 58, 110, 0.08);
+  }
+
+  /* ===== MAIN ZONE: timeline + sidebar ===== */
+  .main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 410px;
+    column-gap: 44px;
+    position: relative;
+    height: 1310px;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 0;
+  }
+  .t-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    align-items: center;
+    min-height: 140px;
+    position: relative;
+  }
+  .t-row + .t-row::before {
+    content: "";
+    position: absolute;
+    left: 220px;
+    right: 40px;
+    top: 0;
+    height: 2px;
+    background: var(--divider);
+    opacity: 0.6;
+  }
+  .t-year {
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--muted);
+    text-align: right;
+    padding-right: 28px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    align-self: center;
+  }
+  .t-entry {
+    font-size: 42px;
+    font-weight: 900;
+    color: var(--navy);
+    padding-left: 36px;
+    line-height: 1.4;
+  }
+  /* orange dot at end of entry text (stub point) */
+  .t-dot {
+    position: absolute;
+    right: 36px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--orange);
+    box-shadow: 0 0 0 4px rgba(232, 127, 46, 0.2);
+  }
+  /* horizontal stub from dot to spine */
+  .t-stub {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    height: 4px;
+    background: var(--orange);
+    border-radius: 2px;
+    transform: translateY(-50%);
+  }
+  /* vertical orange spine on right side of timeline column */
+  .t-spine {
+    position: absolute;
+    right: 0;
+    top: 140px;
+    bottom: 80px;
+    width: 4px;
+    background: var(--orange);
+    border-radius: 3px;
+  }
+  .spine-dot {
+    position: absolute;
+    right: -6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--orange);
+    box-shadow: 0 0 0 4px rgba(232, 127, 46, 0.2);
+  }
+
+  /* Right sidebar */
+  .sidebar {
+    background: var(--gray-card);
+    border-radius: 24px;
+    padding: 44px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    box-shadow: 0 4px 16px rgba(30, 58, 110, 0.06);
+  }
+  .sidebar-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    margin-bottom: 6px;
+    letter-spacing: 2px;
+  }
+  .sidebar-title .dash {
+    display: block;
+    width: 70px;
+    height: 5px;
+    background: var(--orange);
+    border-radius: 3px;
+    margin-top: 10px;
+    margin-left: 4px;
+  }
+  .sidebar-progress {
+    height: 8px;
+    width: 150px;
+    background: var(--divider);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .sidebar-progress::after {
+    content: "";
+    display: block;
+    width: 62%;
+    height: 100%;
+    background: var(--orange);
+    border-radius: 4px;
+  }
+  .skill-group { display: flex; flex-direction: column; gap: 8px; }
+  .skill-group .main {
+    font-size: 40px;
+    font-weight: 900;
+    color: var(--navy);
+    height: auto; /* override grid */
+    display: block;
+    letter-spacing: 1px;
+  }
+  .skill-group .item {
+    font-size: 40px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.5;
+  }
+  .skill-group .item::before {
+    content: "｜";
+    color: var(--orange);
+    font-weight: 900;
+    margin-right: 4px;
+  }
+
+  /* ===== BOTTOM CARD ===== */
+  .bottom-card {
+    margin-top: 64px;
+    background: var(--gray-card);
+    border-radius: 24px;
+    padding: 48px 60px;
+    box-shadow: 0 4px 16px rgba(30, 58, 110, 0.06);
+  }
+  .bottom-title {
+    font-size: 46px;
+    font-weight: 900;
+    color: var(--navy);
+    margin-bottom: 32px;
+    letter-spacing: 2px;
+  }
+  .repo-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 0;
+  }
+  .repo-row + .repo-row { border-top: 2px solid var(--divider); }
+  .repo-label {
+    font-size: 26px;
+    color: var(--muted);
+    font-weight: 700;
+    flex: none;
+    width: 140px;
+  }
+  .repo-value {
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--navy);
+  }
+  .repo-value .sep { color: var(--muted); margin: 0 10px; font-weight: 600; }
+  .repo-value .url { color: var(--navy); font-weight: 700; }
+
+  /* Print */
+  @media print {
+    @page { size: A4 portrait; margin: 0; }
+    body { overflow: visible; }
+    #scaler { zoom: 0.451 !important; }
+  }
+</style>
+</head>
+<body>
+<div id="scaler">
+
+  <!-- ===== HEADER ===== -->
+  <div class="header">
+    <div class="name-block">
+      <div class="name">{{name}}</div>
+      <div class="name-underline"></div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="header-right">
+      <div class="header-tagline">{{positioning}}</div>
+      <div class="header-contact">
+        <span class="phone">{{phone}}</span>
+        <span class="email">{{email}}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 求职定位 banner ===== -->
+  <div class="banner">
+    <div class="banner-top">求职定位：</div>
+    <div class="banner-bottom">{{positioning}}</div>
+  </div>
+
+  <!-- ===== MAIN ===== -->
+  <div class="main">
+
+    <div class="timeline">
+      <div class="t-spine">
+        <div class="spine-dot" style="top: 70px;"></div>
+        <div class="spine-dot" style="top: 350px;"></div>
+        <div class="spine-dot" style="top: 630px;"></div>
+        <div class="spine-dot" style="top: 910px;"></div>
+        <div class="spine-dot" style="top: 1190px;"></div>
+      </div>
+
+      <div class="t-row" style="min-height: 130px;">
+        <div class="t-year">2016</div>
+        <div class="t-entry">办公室智能助手</div>
+        <div class="t-stub" style="width: 42px;"></div>
+        <div class="t-dot"></div>
+      </div>
+
+      <div class="t-row" style="min-height: 150px;">
+        <div class="t-year">2017</div>
+        <div class="t-entry">{{projects.3.org}}</div>
+      </div>
+
+      <div class="t-row" style="min-height: 150px;">
+        <div class="t-year">2018</div>
+        <div class="t-entry">{{timeline.2.entry}}</div>
+        <div class="t-stub" style="width: 60px;"></div>
+        <div class="t-dot"></div>
+      </div>
+
+      <div class="t-row" style="min-height: 150px;">
+        <div class="t-year">2018-2020</div>
+        <div class="t-entry">{{timeline.3.entry}}</div>
+      </div>
+
+      <div class="t-row" style="min-height: 150px;">
+        <div class="t-year">2019-至今</div>
+        <div class="t-entry">{{jobs.0.org}}</div>
+      </div>
+
+      <div class="t-row" style="min-height: 150px;">
+        <div class="t-year">2020-2021</div>
+        <div class="t-entry">{{projects.4.org}}</div>
+        <div class="t-stub" style="width: 78px;"></div>
+        <div class="t-dot"></div>
+      </div>
+
+      <div class="t-row" style="min-height: 150px;">
+        <div class="t-year">2021</div>
+        <div class="t-entry">{{projects.2.org}}</div>
+        <div class="t-stub" style="width: 54px;"></div>
+        <div class="t-dot"></div>
+      </div>
+
+      <div class="t-row" style="min-height: 150px;">
+        <div class="t-year">2023-至今</div>
+        <div class="t-entry">{{projects.0.org}}</div>
+        <div class="t-stub" style="width: 36px;"></div>
+        <div class="t-dot"></div>
+      </div>
+
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div>
+        <div class="sidebar-title">技术深度栏<span class="dash"></span></div>
+        <div class="sidebar-progress"></div>
+      </div>
+
+      <div class="skill-group">
+        <div class="main">大模型｜ViT</div>
+        <div class="item">CUDA</div>
+        <div class="item">云原生</div>
+        <div class="item">工业协议</div>
+        <div class="item">数据基建</div>
+      </div>
+
+      <div class="skill-group">
+        <div class="main">大模型｜ViT</div>
+        <div class="item">CUDA</div>
+        <div class="item">云原生</div>
+        <div class="item">工业协议</div>
+        <div class="item">数据基建</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== BOTTOM CARD ===== -->
+  <div class="bottom-card">
+    <div class="bottom-title">自我评价：</div>
+    <div class="repo-row">
+      <div class="repo-label">开源项目</div>
+      <div class="repo-value"><b>{{repos.0.name}}</b><span class="sep">/</span><span class="url">https://{{repos.0.url}}</span></div>
+    </div>
+    <div class="repo-row">
+      <div class="repo-label">开源项目</div>
+      <div class="repo-value"><b>{{repos.1.name}}</b><span class="sep">/</span><span class="url">https://{{repos.1.url}}</span></div>
+    </div>
+    <div class="repo-row">
+      <div class="repo-label">开源项目</div>
+      <div class="repo-value"><b>{{repos.2.name}}</b><span class="sep">/</span><span class="url">https://{{repos.2.url}}</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var scaler = document.getElementById("scaler");
+  function fit() {
+    var s = Math.min(1, document.documentElement.clientWidth / 1760);
+    scaler.style.zoom = s;
+  }
+  window.addEventListener("resize", fit);
+  fit();
+})();
+</script>
+</body>
+</html>

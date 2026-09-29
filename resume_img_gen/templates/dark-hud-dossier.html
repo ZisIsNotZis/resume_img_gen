@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>{{name}}｜{{title}}</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; }
+  body {
+    font-family: "Noto Sans CJK SC", "Noto Sans SC", "PingFang SC", sans-serif;
+    color: #1c2e57;
+    background: #f0e9d8;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  #scaler { width: 1760px; height: 2464px; position: relative; transform-origin: top left;
+    background: #f7f0e0;
+    overflow: hidden;
+  }
+
+  /* paper texture subtle */
+  #scaler::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(900px 500px at 80% 10%, rgba(255,255,255,0.5), transparent 60%),
+      radial-gradient(700px 600px at 10% 90%, rgba(230,215,180,0.3), transparent 60%);
+    opacity: .9;
+  }
+
+  /* ========== left sidebar ========== */
+  .sidebar {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 470px;
+    background: linear-gradient(180deg, #fbf6ea 0%, #f7efdd 100%);
+    padding: 82px 42px 80px 56px;
+    border-right: 1px solid rgba(170,155,120,0.15);
+  }
+
+  .name { font-size: 104px; font-weight: 900; color: #1c2e57; letter-spacing: 5px;
+    line-height: 1; margin-bottom: 22px; }
+  .name-underline { width: 190px; height: 6px; background: #1c2e57; margin-bottom: 64px; border-radius: 3px; }
+
+  .side-section { margin-bottom: 54px; position: relative; }
+  .side-section h3 { font-size: 38px; font-weight: 800; color: #1c2e57; margin-bottom: 18px; letter-spacing: 2px; }
+  .side-section .content { font-size: 27px; line-height: 1.8; color: #3a4a6e; }
+  /* dot on timeline + connector line */
+  .side-section::after {
+    content: ""; position: absolute; right: -54px; top: 18px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #d9761f; border: 4px solid #f7f0e0;
+    box-shadow: 0 0 0 2px #d9761f;
+    z-index: 3;
+  }
+  .side-section::before {
+    content: ""; position: absolute; right: -32px; top: 28px;
+    width: 22px; height: 2px; background: #d9761f;
+  }
+
+  .contact-item { padding: 8px 0; color: #3a4a6e; position: relative; }
+  .contact-item.u {
+    border-bottom: 2px solid rgba(28,46,87,0.25);
+    padding-bottom: 6px; display: inline-block;
+  }
+
+  /* progress bars for 教育背景 */
+  .bars { display: flex; flex-direction: column; gap: 18px; margin-top: 10px; }
+  .bar { height: 22px; background: #e5dfcf; border-radius: 11px; overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 11px; }
+  .bar.orange i { background: linear-gradient(90deg, #e48a32, #d26a16); width: 55%; }
+  .bar.dark i { background: linear-gradient(90deg, #2c4273, #1c2e57); width: 70%; }
+  .bar.light i { background: linear-gradient(90deg, #9aa4bc, #7a86a5); width: 45%; }
+
+  /* circular rings */
+  .ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .ring { width: 210px; height: 210px; position: relative; }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring .label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 30px; font-weight: 800; color: #1c2e57; letter-spacing: 3px; }
+
+  .ring-small { width: 170px; height: 170px; }
+  .ring-small .label { font-size: 27px; }
+
+  /* ========== timeline ========== */
+  .timeline {
+    position: absolute; left: 500px; top: 0; bottom: 0;
+    width: 2px;
+  }
+  .timeline .line { position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+    background: linear-gradient(180deg, #e4832a 0%, #d9761f 50%, #e4832a 100%); }
+
+  /* horizontal connectors to left sidebar — handled by side-section pseudos now */
+
+  /* ========== main content ========== */
+  .main {
+    position: absolute; left: 550px; right: 50px; top: 68px; bottom: 80px;
+    display: flex; flex-direction: column;
+  }
+
+  .title { font-size: 68px; font-weight: 900; color: #1c2e57; line-height: 1.15; letter-spacing: 2px; }
+  .subtitle { font-size: 30px; font-weight: 500; color: #5a6380; margin-top: 18px; letter-spacing: 1px; }
+  .subtitle .sep { color: #d9761f; margin: 0 12px; font-weight: 600; }
+
+  /* 核心标签 pill */
+  .tag-bar { display: flex; align-items: center; margin-top: 40px; margin-bottom: 26px; }
+  .tag-label {
+    background: #e6dfcb; color: #6b6a55; font-size: 27px; font-weight: 700;
+    padding: 13px 26px; border-radius: 10px 0 0 10px;
+    border: 1px solid rgba(170,155,120,0.35); border-right: none;
+    letter-spacing: 3px; flex: none;
+  }
+  .tag-pill {
+    flex: 1;
+    background: linear-gradient(90deg, #1c2e57 0%, #2a3f6d 100%);
+    color: #fff; font-size: 31px; font-weight: 700; letter-spacing: 3px;
+    padding: 17px 36px; border-radius: 0 14px 14px 0;
+    box-shadow: 0 6px 18px rgba(28,46,87,0.22);
+  }
+  .tag-pill .sep { color: #e4832a; margin: 0 10px; font-weight: 800; }
+
+  /* info box (教育背景 + 竞赛荣誉) */
+  .info-box {
+    background:
+      repeating-linear-gradient(0deg, transparent 0 36px, rgba(170,155,120,0.13) 36px 37px),
+      repeating-linear-gradient(90deg, transparent 0 36px, rgba(170,155,120,0.13) 36px 37px),
+      rgba(246, 239, 218, 0.5);
+    border: 1px solid rgba(170,155,120,0.3);
+    border-radius: 12px;
+    padding: 22px 32px;
+    margin-bottom: 28px;
+  }
+  .info-row { display: flex; align-items: flex-start; gap: 24px; padding: 12px 0; }
+  .info-row + .info-row { border-top: 1px dashed rgba(170,155,120,0.3); }
+  .info-row .label { flex: none; font-size: 27px; font-weight: 700; color: #6b6a55;
+    background: #e6dfcb; border-radius: 8px; padding: 6px 22px; letter-spacing: 3px;}
+  .info-row .val { flex: 1; font-size: 27px; font-weight: 700; color: #1c2e57; line-height: 1.55; }
+
+  /* section */
+  .section { margin-bottom: 26px; position: relative; }
+  .section h2 {
+    font-size: 42px; font-weight: 900; color: #1c2e57;
+    letter-spacing: 3px; margin-bottom: 18px;
+    position: relative; padding-left: 10px;
+  }
+  .section h2::before {
+    content: ""; position: absolute; left: -50px; top: 14px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #d9761f; border: 4px solid #f7f0e0;
+    box-shadow: 0 0 0 2px #d9761f;
+    z-index: 3;
+  }
+
+  .section .body { font-size: 26px; line-height: 1.75; color: #3a4a6e; padding-left: 8px; }
+  .section .body b { color: #1c2e57; font-weight: 800; }
+  .section .body .date { color: #b05f14; font-weight: 700; white-space: nowrap; }
+  .section .body .sep { color: #d9761f; margin: 0 8px; font-weight: 700; }
+
+  /* items list with mini timeline */
+  .items { display: flex; flex-direction: column; gap: 4px; padding-left: 8px; }
+  .item { display: flex; align-items: flex-start; gap: 16px; padding: 5px 0; }
+  .item .dot { flex: none; width: 12px; height: 12px; border-radius: 50%;
+    background: #d9761f; margin-top: 12px; position: relative; }
+  .item .dot::after {
+    content: ""; position: absolute; left: 4px; top: 12px;
+    width: 2px; height: calc(100% + 14px);
+    background: rgba(217,118,31,0.3);
+  }
+  .item:last-child .dot::after { display: none; }
+  .item .text { flex: 1; font-size: 26px; line-height: 1.6; color: #3a4a6e; }
+  .item .text b { color: #1c2e57; font-weight: 800; }
+  .item .text .date { color: #b05f14; font-weight: 700; white-space: nowrap; }
+
+  /* 自我评价 + 开源项目 */
+  .eval-section {
+    background: linear-gradient(180deg, rgba(246,239,218,0.6) 0%, rgba(240,232,208,0.6) 100%);
+    border-radius: 12px;
+    padding: 24px 32px;
+    margin-top: 4px;
+    border: 1px solid rgba(170,155,120,0.25);
+  }
+
+  .project-item { display: flex; align-items: center; gap: 18px; padding: 9px 0; font-size: 26px; color: #3a4a6e; }
+  .project-item .tag-sm {
+    flex: none; background: #e6dfcb; color: #6b6a55; font-size: 22px; font-weight: 700;
+    padding: 6px 16px; border-radius: 8px; letter-spacing: 2px;
+  }
+  .project-item b { color: #1c2e57; }
+  .project-item .sep { color: #d9761f; margin: 0 8px; font-weight: 700; }
+  .project-item .u { color: #b05f14; font-weight: 600; }
+
+  /* print */
+  @media print {
+    @page { size: A4 portrait; margin: 0; }
+    body { overflow: visible; }
+    #scaler { zoom: 0.451 !important; }
+  }
+</style>
+</head>
+<body>
+<div id="scaler">
+
+  <!-- ====== LEFT SIDEBAR ====== -->
+  <div class="sidebar">
+    <div class="name">{{name}}</div>
+    <div class="name-underline"></div>
+
+    <div class="side-section" style="top:0">
+      <h3>求职意向</h3>
+      <div class="content">{{phone}}</div>
+    </div>
+
+    <div class="side-section">
+      <h3>联系方式</h3>
+      <div class="content">
+        <div class="contact-item">{{email}}</div>
+        <div class="contact-item u">{{github_url}}</div>
+      </div>
+    </div>
+
+    <div class="side-section">
+      <h3>教育背景</h3>
+      <div class="bars">
+        <div class="bar orange"><i></i></div>
+        <div class="bar dark"><i></i></div>
+        <div class="bar light"><i></i></div>
+      </div>
+    </div>
+
+    <div class="side-section">
+      <h3 style="margin-bottom: 26px;">教育荣誉</h3>
+      <div class="ring-wrap">
+        <div class="ring ring-small">
+          <svg viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#e0d9c6" stroke-width="7"/>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#1c2e57" stroke-width="7"
+              stroke-dasharray="200 264" stroke-linecap="round"/>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#d9761f" stroke-width="7"
+              stroke-dasharray="60 264" stroke-dashoffset="-200" stroke-linecap="round"/>
+          </svg>
+          <div class="label">竞赛荣誉</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ring-wrap" style="margin-top: 20px;">
+      <div class="ring">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#e0d9c6" stroke-width="8"/>
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#d9761f" stroke-width="8"
+            stroke-dasharray="180 264" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#1c2e57" stroke-width="8"
+            stroke-dasharray="70 264" stroke-dashoffset="-180" stroke-linecap="round"/>
+        </svg>
+        <div class="label">技能雷达</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== TIMELINE ====== -->
+  <div class="timeline">
+    <div class="line"></div>
+  </div>
+
+  <!-- ====== MAIN CONTENT ====== -->
+  <div class="main">
+
+    <div class="title">{{title}}</div>
+    <div class="subtitle">大模型底层研发<span class="sep">|</span>多模态大模型算法工程师<span class="sep">|</span>AI全栈研发工程师</div>
+
+    <!-- 核心标签 -->
+    <div class="tag-bar">
+      <div class="tag-label">核心标签</div>
+      <div class="tag-pill">
+        LLM<span class="sep">|</span>ViT<span class="sep">|</span>工业AI<span class="sep">|</span>云原生<span class="sep">|</span>时序数采<span class="sep">|</span>推理优化
+      </div>
+    </div>
+
+    <!-- 教育背景 + 竞赛荣誉 -->
+    <div class="info-box">
+      <div class="info-row">
+        <div class="label">教育背景</div>
+        <div class="val">{{education.0.school}}<span class="sep" style="color:#d9761f;margin:0 10px;">｜</span>{{education.0.detail}}<br>{{education.1.school}}<span class="sep" style="color:#d9761f;margin:0 10px;">｜</span>{{education.1.detail}}</div>
+      </div>
+      <div class="info-row">
+        <div class="label">竞赛荣誉</div>
+        <div class="val">{{honors.0.name}}{{honors.0.detail}}两次</div>
+      </div>
+    </div>
+
+    <!-- 实习经历 -->
+    <div class="section">
+      <h2>实习经历</h2>
+      <div class="body">
+        <b>{{internships.0.org}}</b><span class="sep">｜</span>{{internships.0.role}}<span class="sep">｜</span><span class="date">{{internships.0.date}}</span>
+      </div>
+      <div class="body" style="margin-top: 8px;">
+        <b>{{jobs.0.org}}</b><span class="sep">｜</span>{{jobs.0.role}}<span class="sep">｜</span><span class="date">{{jobs.0.date}}</span>
+      </div>
+    </div>
+
+    <!-- 核心技能 -->
+    <div class="section">
+      <h2>核心技能</h2>
+      <div class="body">
+        {{skills.0.name}}<span class="sep">｜</span>{{skills.0.extra}}<span class="sep">｜</span>{{skills.1.name}}<span class="sep">｜</span><br>
+        工业通信协议<span class="sep">｜</span>{{skills.2.name}}
+      </div>
+    </div>
+
+    <!-- 项目经历 -->
+    <div class="section">
+      <h2>项目经历</h2>
+      <div class="items">
+        <div class="item"><div class="dot"></div><div class="text">
+          <b>{{projects.0.org}}</b><span class="sep" style="color:#d9761f;margin:0 8px;">｜</span>{{projects.0.name}}<span class="date">｜{{projects.0.date}}</span>
+        </div></div>
+        <div class="item"><div class="dot"></div><div class="text">
+          <b>{{projects.1.org}}</b><span class="date">｜{{projects.1.date}}</span>
+        </div></div>
+        <div class="item"><div class="dot"></div><div class="text">
+          <b>{{projects.2.org}}</b><span class="sep" style="color:#d9761f;margin:0 8px;">｜</span>{{projects.2.name}}<span class="date">｜{{projects.2.date}}</span>
+        </div></div>
+        <div class="item"><div class="dot"></div><div class="text">
+          <b>{{projects.3.org}}</b><span class="sep" style="color:#d9761f;margin:0 8px;">｜</span>{{projects.3.name}}<span class="date">｜{{projects.3.date}}</span>
+        </div></div>
+        <div class="item"><div class="dot"></div><div class="text">
+          <b>{{projects.4.org}}</b><span class="sep" style="color:#d9761f;margin:0 8px;">｜</span>{{projects.4.name}}<span class="date">｜{{projects.4.date}}</span>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- 自我评价 + 开源项目 -->
+    <div class="section">
+      <h2>自我评价</h2>
+      <div class="eval-section">
+        <div style="display:flex;gap:20px;margin-bottom:16px;">
+          <div style="font-size:24px;color:#8a8060;font-weight:700;letter-spacing:2px;flex:none;padding-top:4px;">开源项目</div>
+          <div style="flex:1;font-size:27px;line-height:1.65;color:#3a4a6e;">
+            <b style="color:#1c2e57;">兼具算法建模、底层工程开发与云原生部署能力</b>，可独立攻坚核心技术难点，也能配合团队，推进复杂商业级项目。
+          </div>
+        </div>
+        <div style="display:flex;gap:20px;margin-bottom:20px;">
+          <div style="font-size:24px;color:#8a8060;font-weight:700;letter-spacing:2px;flex:none;padding-top:4px;">开源项目</div>
+          <div style="flex:1;font-size:27px;line-height:1.65;color:#3a4a6e;">
+            长期聚焦大模型底层、多模态算法、工业AI落地，持续通过开源与技术预研沉淀能力。
+          </div>
+        </div>
+        <div class="project-item"><div class="tag-sm">开源项目</div>
+          <b>{{repos.0.name}}</b><span class="sep">/</span><span class="u">https://{{repos.0.url}}</span>
+        </div>
+        <div class="project-item"><div class="tag-sm">开源项目</div>
+          <b>{{repos.1.name}}</b><span class="sep">/</span><span class="u">https://{{repos.1.url}}</span>
+        </div>
+        <div class="project-item"><div class="tag-sm">开源项目</div>
+          <b>{{repos.2.name}}</b><span class="sep">/</span><span class="u">https://{{repos.2.url}}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    var scaler = document.getElementById("scaler");
+    function fit() {
+      var s = Math.min(1, document.documentElement.clientWidth / 1760);
+      scaler.style.zoom = s;
+    }
+    window.addEventListener("resize", fit);
+    fit();
+  })();
+</script>
+</body>
+</html>

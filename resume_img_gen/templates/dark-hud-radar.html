@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>{{name}}｜{{title}}</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a1922;
+    --bg-panel: rgba(14, 38, 52, 0.7);
+    --bg-panel-2: rgba(18, 48, 65, 0.7);
+    --cyan: #25e0e8;
+    --cyan-bright: #4df5ff;
+    --cyan-dim: #1a7a8a;
+    --cyan-glow: rgba(37, 224, 232, 0.6);
+    --text: #ffffff;
+    --text-dim: #a8e5ec;
+    --text-mute: #7fb8c2;
+  }
+
+  html, body { width: 100%; }
+
+  body {
+    font-family: "Noto Sans CJK SC", "Noto Sans SC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #scaler { width: 1760px; height: 2464px; position: relative; transform-origin: top left; }
+
+  /* ===== background layer ===== */
+  .bg-layer { position: absolute; inset: 0; pointer-events: none; }
+
+  /* grid lines */
+  .grid-bg { position: absolute; inset: 40px; opacity: 0.08;
+    background-image:
+      linear-gradient(rgba(37,224,232,0.6) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37,224,232,0.6) 1px, transparent 1px);
+    background-size: 44px 44px;
+    border-radius: 24px;
+  }
+
+  /* outer frame with corner brackets only (no full border) */
+  .frame { position: absolute; inset: 20px; border: none; border-radius: 28px; }
+  .frame::before, .frame::after, .frame .tr, .frame .bl {
+    content: ""; position: absolute; width: 160px; height: 160px;
+    border: 5px solid var(--cyan);
+  }
+  .frame::before { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 22px 0 0 0; }
+  .frame::after { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 22px 0; }
+  .frame .tr { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 22px 0 0; }
+  .frame .bl { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 22px; }
+
+  /* corner rivets */
+  .rivet { position: absolute; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--cyan); box-shadow: 0 0 10px var(--cyan-glow); }
+  .rivet.tl { top: 52px; left: 52px; }
+  .rivet.tr { top: 52px; right: 52px; }
+  .rivet.bl { bottom: 52px; left: 52px; }
+  .rivet.br { bottom: 52px; right: 52px; }
+
+  /* top/bottom hatch strips */
+  .hatch-top { position: absolute; top: 42px; left: 220px; right: 220px; height: 12px;
+    background: repeating-linear-gradient(90deg, var(--cyan) 0 12px, transparent 12px 22px);
+    opacity: 0.8; }
+  .hatch-bot { position: absolute; bottom: 42px; left: 220px; right: 220px; height: 12px;
+    background: repeating-linear-gradient(90deg, var(--cyan) 0 12px, transparent 12px 22px);
+    opacity: 0.8; }
+
+  /* circuit decoration bottom-right */
+  .circuit { position: absolute; bottom: 80px; right: 80px; width: 600px; height: 400px;
+    opacity: 0.45; }
+
+  /* left decorative side dots */
+  .side-dots { position: absolute; left: 42px; top: 50%; transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 26px; }
+  .side-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); opacity: 0.8; }
+  .side-dots.right { left: auto; right: 42px; }
+
+  /* ===== page content ===== */
+  .content { position: absolute; top: 120px; left: 90px; right: 90px; bottom: 100px; display: flex; flex-direction: column; gap: 42px; }
+
+  /* ===== header ===== */
+  .header { display: grid; grid-template-columns: auto 1fr; column-gap: 60px; align-items: center; }
+  .name { font-size: 140px; font-weight: 900; line-height: 1;
+    color: #ffffff;
+    text-shadow:
+      0 0 30px rgba(37,224,232,0.35),
+      2px 2px 0 rgba(37,224,232,0.15),
+      4px 4px 10px rgba(0,0,0,0.5);
+    letter-spacing: 6px;
+  }
+  .header-right { display: flex; flex-direction: column; gap: 20px;
+    padding-left: 40px; border-left: 3px solid rgba(37,224,232,0.5); }
+  .title { font-size: 64px; font-weight: 900; color: #ffffff; letter-spacing: 2px; }
+  .subtitle { font-size: 32px; font-weight: 700; color: var(--text-dim); letter-spacing: 3px; }
+  .contact { font-size: 28px; color: var(--cyan); font-weight: 700; letter-spacing: 1px; }
+  .contact .sep { margin: 0 10px; color: var(--cyan-dim); }
+
+  /* ===== hexagonal panel (core abilities) ===== */
+  .hex-panel {
+    position: relative;
+    background: var(--bg-panel);
+    border: 3px solid var(--cyan);
+    padding: 44px 56px 54px;
+    clip-path: polygon(0 0, calc(100% - 40px) 0, 100% 40px, 100% calc(100% - 40px), calc(100% - 40px) 100%, 0 100%, 0 0);
+  }
+  .hex-panel::before {
+    content: ""; position: absolute; left: 20px; right: 20px; top: -3px; height: 3px;
+    background: repeating-linear-gradient(90deg, var(--cyan) 0 16px, transparent 16px 28px);
+  }
+  .hex-panel::after {
+    content: ""; position: absolute; left: 20px; right: 20px; bottom: -3px; height: 3px;
+    background: repeating-linear-gradient(90deg, var(--cyan) 0 16px, transparent 16px 28px);
+  }
+  .hex-panel h2 {
+    position: absolute; top: -26px; left: 52px;
+    font-size: 44px; font-weight: 900; color: #ffffff; letter-spacing: 4px;
+    background: var(--bg); padding: 0 22px;
+    text-shadow: 0 0 20px var(--cyan-glow);
+  }
+  .hex-panel h2::before {
+    content: ""; position: absolute; left: -8px; top: 50%; transform: translateY(-50%);
+    width: 20px; height: 20px; background: var(--cyan); clip-path: polygon(100% 0, 0 50%, 100% 100%);
+    filter: drop-shadow(0 0 6px var(--cyan-glow));
+  }
+
+  .core-abilities { display: grid; grid-template-columns: 1fr 1.1fr 1fr; align-items: center; gap: 30px; padding-top: 10px; }
+  .abilities-left { display: flex; flex-direction: column; gap: 14px; font-size: 32px; font-weight: 700; color: #fff; }
+  .abilities-left .item { display: flex; align-items: center; gap: 18px; }
+  .abilities-left .item .icon-wrap {
+    width: 160px; height: 160px; position: relative;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 6px;
+  }
+  .abilities-left .dial {
+    position: absolute; inset: 0;
+    border: 6px solid var(--cyan);
+    border-radius: 50%;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    transform: rotate(-45deg);
+    box-shadow: 0 0 20px var(--cyan-glow), inset 0 0 20px var(--cyan-glow);
+  }
+  .abilities-left .dial::after {
+    content: ""; position: absolute; inset: 18px;
+    border: 3px solid rgba(37,224,232,0.5);
+    border-radius: 50%;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    transform: rotate(30deg);
+  }
+  .abilities-left .dial-cnt { position: relative; font-size: 56px; font-weight: 900; color: var(--cyan); text-shadow: 0 0 15px var(--cyan-glow); }
+  .abilities-left .items { display: flex; flex-direction: column; gap: 10px; }
+  .abilities-left .item-t { display: flex; align-items: center; gap: 14px; }
+  .abilities-left .item-t::before { content: ""; width: 8px; height: 8px; background: var(--cyan); transform: rotate(45deg); box-shadow: 0 0 8px var(--cyan-glow); }
+  .abilities-right { display: flex; flex-direction: column; gap: 14px; align-items: flex-end; text-align: right; }
+  .abilities-right .tag {
+    display: inline-block; padding: 10px 24px; border: 2px solid var(--cyan);
+    font-size: 28px; font-weight: 800; color: #fff;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    background: rgba(37,224,232,0.1);
+  }
+  .abilities-right .tag.hot { background: linear-gradient(90deg, rgba(37,224,232,0.35), rgba(37,224,232,0.15)); color: var(--cyan); text-shadow: 0 0 10px var(--cyan-glow); }
+
+  /* central radar */
+  .radar { position: relative; width: 380px; height: 380px; justify-self: center; }
+  .radar .ring { position: absolute; inset: 0; border: 3px solid var(--cyan); border-radius: 50%; opacity: 0.45;
+    box-shadow: 0 0 24px rgba(37,224,232,0.3), inset 0 0 24px rgba(37,224,232,0.2); }
+  .radar .ring.r2 { inset: 45px; border-width: 2px; opacity: 0.55; }
+  .radar .ring.r3 { inset: 90px; border-width: 2px; opacity: 0.7; }
+  .radar .ring.r4 { inset: 135px; border-width: 2px; opacity: 0.85; }
+  .radar .cross { position: absolute; inset: 0; }
+  .radar .cross::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: var(--cyan); opacity: 0.4; }
+  .radar .cross::after { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--cyan); opacity: 0.4; }
+  /* static bright sweep arc at upper-right */
+  .radar .sweep {
+    position: absolute; top: 0; left: 50%; width: 50%; height: 50%;
+    background: conic-gradient(from -10deg, transparent 0deg, rgba(37,224,232,0.85) 55deg, transparent 75deg);
+    transform-origin: bottom left;
+    transform: rotate(0deg);
+    clip-path: polygon(0 100%, 0 0, 100% 0);
+    filter: drop-shadow(0 0 14px var(--cyan-glow));
+  }
+  .radar .dot { position: absolute; left: 38%; top: 30%; width: 16px; height: 16px; background: var(--cyan-bright); border-radius: 50%; box-shadow: 0 0 20px var(--cyan-glow); }
+  .radar .dot.d2 { left: 62%; top: 56%; width: 12px; height: 12px; }
+  .radar .dot.d3 { left: 48%; top: 70%; width: 14px; height: 14px; }
+  .radar .center {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 100px; height: 100px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(37,224,232,0.6) 0%, rgba(37,224,232,0.15) 50%, transparent 70%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 56px; color: var(--cyan-bright); text-shadow: 0 0 25px var(--cyan-glow);
+  }
+  .radar .arc-tick {
+    position: absolute; top: 8px; left: 50%; width: 4px; height: 22px; background: var(--cyan);
+    transform: translateX(-50%); opacity: 0.9;
+  }
+  .radar .arc-tick.t2 { top: auto; bottom: 8px; }
+  .radar .arc-tick.t3 { top: 50%; left: 8px; width: 22px; height: 4px; transform: translateY(-50%); }
+  .radar .arc-tick.t4 { left: auto; right: 8px; top: 50%; width: 22px; height: 4px; transform: translateY(-50%); }
+
+  /* ===== main grid ===== */
+  .main-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    column-gap: 44px;
+    flex: 1;
+    min-height: 0;
+  }
+  .left-col, .right-col { display: flex; flex-direction: column; gap: 36px; min-height: 0; }
+
+  /* ===== section card ===== */
+  .card {
+    position: relative;
+    background: var(--bg-panel);
+    border: 2px solid rgba(37,224,232,0.55);
+    padding: 28px 34px;
+    clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%, 0 0);
+  }
+  .card h3 {
+    display: inline-flex; align-items: center; gap: 16px;
+    font-size: 42px; font-weight: 900; color: #ffffff; letter-spacing: 3px;
+    margin-bottom: 22px;
+    text-shadow: 0 0 16px rgba(37,224,232,0.4);
+  }
+  .card h3::before {
+    content: ""; width: 18px; height: 18px; background: var(--cyan);
+    clip-path: polygon(100% 0, 0 50%, 100% 100%);
+    filter: drop-shadow(0 0 6px var(--cyan-glow));
+  }
+  .card ul { list-style: none; }
+  .card li { font-size: 30px; line-height: 1.65; color: var(--text); }
+  .card li + li { margin-top: 6px; }
+  .card li b { color: #ffffff; font-weight: 800; }
+  .card .c { color: var(--cyan); font-weight: 800; white-space: nowrap; }
+  .card .sep { color: var(--cyan-dim); margin: 0 4px; }
+
+  /* card top corner accent */
+  .card::before {
+    content: ""; position: absolute; top: -2px; right: 28px;
+    width: 100px; height: 4px; background: var(--cyan); opacity: 0.9;
+    box-shadow: 0 0 10px var(--cyan-glow);
+  }
+  .card::after {
+    content: ""; position: absolute; bottom: -2px; left: 28px;
+    width: 100px; height: 4px; background: var(--cyan); opacity: 0.9;
+    box-shadow: 0 0 10px var(--cyan-glow);
+  }
+
+  /* small section inside right col */
+  .sub-h {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 34px; font-weight: 900; color: #fff;
+    margin: 20px 0 14px;
+    letter-spacing: 2px;
+  }
+  .sub-h::before {
+    content: ""; width: 6px; height: 28px;
+    background: linear-gradient(180deg, var(--cyan), transparent);
+    border-radius: 2px;
+  }
+
+  .proj-list { list-style: none; }
+  .proj-list li { position: relative; padding: 16px 0 16px 28px; font-size: 28px; line-height: 1.65; color: var(--text);
+    border-bottom: 1px dashed rgba(37,224,232,0.3); }
+  .proj-list li:last-child { border-bottom: none; }
+  .proj-list li::before {
+    content: ""; position: absolute; left: 0; top: 28px; width: 12px; height: 12px;
+    border: 2px solid var(--cyan); transform: rotate(45deg);
+    box-shadow: 0 0 8px var(--cyan-glow);
+  }
+  .proj-list li b { color: #ffffff; font-weight: 800; }
+  .proj-list li .c { color: var(--cyan); font-weight: 800; white-space: nowrap; }
+  .proj-list li .sep { color: var(--cyan-dim); margin: 0 4px; }
+
+  /* left column achievements / work mixed card */
+  .work-card { display: flex; flex-direction: column; gap: 18px; }
+  .work-row { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 24px; align-items: stretch; }
+  .work-row .box {
+    background: rgba(20, 52, 70, 0.6);
+    border: 2px solid rgba(37,224,232,0.4);
+    padding: 20px 22px;
+    border-radius: 6px;
+  }
+  .work-row .box h4 { font-size: 26px; font-weight: 800; color: var(--cyan); margin-bottom: 10px; letter-spacing: 1px; }
+  .work-row .box p { font-size: 24px; color: var(--text); line-height: 1.5; }
+  .work-row .hex-icon {
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(20, 52, 70, 0.6);
+    border: 2px solid rgba(37,224,232,0.4);
+    position: relative;
+  }
+  .work-row .hex-icon svg { width: 72px; height: 72px; fill: var(--cyan); filter: drop-shadow(0 0 10px var(--cyan-glow)); }
+
+  /* decorative project thumbnails (bottom-left pair) */
+  .thumbs { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .thumb {
+    position: relative; aspect-ratio: 4/3;
+    background: linear-gradient(135deg, rgba(37,224,232,0.12), rgba(37,224,232,0.05));
+    border: 2px solid rgba(37,224,232,0.45);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .thumb::before {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 70% 30%, rgba(37,224,232,0.25), transparent 50%),
+      linear-gradient(180deg, rgba(37,224,232,0.08), transparent 60%);
+  }
+  .thumb .net {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle, rgba(37,224,232,0.4) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.4;
+  }
+  .thumb .wave {
+    position: absolute; bottom: 20%; left: 0; right: 0; height: 40%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80"><path d="M0 40 Q25 10 50 35 T100 40 T150 30 T200 45 V80 H0 Z" fill="rgba(37,224,232,0.2)"/></svg>') center/100% 100% no-repeat;
+    opacity: 0.6;
+  }
+  .thumb .title {
+    position: absolute; top: 18px; left: 20px;
+    font-size: 24px; font-weight: 800; color: var(--cyan);
+    letter-spacing: 1px;
+  }
+  .thumb .desc {
+    position: absolute; top: 54px; left: 20px; right: 20px;
+    font-size: 16px; color: var(--text-mute); line-height: 1.5;
+  }
+  .thumb .url {
+    position: absolute; bottom: 16px; left: 20px; right: 16px;
+    font-size: 14px; color: var(--cyan); font-weight: 700;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .thumb .tag {
+    position: absolute; top: 16px; right: 16px;
+    font-size: 14px; padding: 4px 10px;
+    background: rgba(37,224,232,0.15);
+    border: 1px solid rgba(37,224,232,0.5);
+    color: var(--cyan);
+    border-radius: 4px;
+  }
+
+  /* ===== self-eval bottom full-width ===== */
+  .self-eval {
+    position: relative;
+    background: var(--bg-panel);
+    border: 2px solid rgba(37,224,232,0.55);
+    padding: 30px 40px;
+    clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% calc(100% - 24px), calc(100% - 24px) 100%, 24px 100%, 0 calc(100% - 24px));
+  }
+  .self-eval h3 {
+    display: inline-flex; align-items: center; gap: 16px;
+    font-size: 42px; font-weight: 900; color: #ffffff; letter-spacing: 3px;
+    margin-bottom: 20px;
+    text-shadow: 0 0 16px rgba(37,224,232,0.4);
+  }
+  .self-eval h3::before {
+    content: ""; width: 18px; height: 18px; background: var(--cyan);
+    clip-path: polygon(100% 0, 0 50%, 100% 100%);
+    filter: drop-shadow(0 0 6px var(--cyan-glow));
+  }
+  .self-eval ul { list-style: none; }
+  .self-eval li { font-size: 28px; line-height: 1.7; color: var(--text); padding-left: 30px; position: relative; }
+  .self-eval li::before {
+    content: ""; position: absolute; left: 0; top: 0.8em;
+    width: 12px; height: 12px; background: var(--cyan); border-radius: 50%;
+    box-shadow: 0 0 8px var(--cyan-glow);
+  }
+  .self-eval li b { color: #ffffff; font-weight: 800; }
+  .self-eval .repos { margin-top: 16px; }
+  .self-eval .repos .label { font-size: 28px; font-weight: 800; color: var(--cyan); margin-bottom: 10px; padding-left: 30px; position: relative; }
+  .self-eval .repos .label::before {
+    content: ""; position: absolute; left: 0; top: 0.45em;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--cyan); box-shadow: 0 0 8px var(--cyan-glow);
+  }
+  .self-eval .repos li { font-size: 26px; }
+  .self-eval .repos .repo-name { color: #ffffff; font-weight: 800; }
+  .self-eval .repos .repo-url { color: var(--cyan); font-weight: 700; }
+
+  .self-eval::before {
+    content: ""; position: absolute; top: -2px; right: 40px;
+    width: 200px; height: 4px; background: var(--cyan); opacity: 0.9;
+    box-shadow: 0 0 10px var(--cyan-glow);
+  }
+  .self-eval::after {
+    content: ""; position: absolute; bottom: -2px; left: 40px;
+    width: 200px; height: 4px; background: var(--cyan); opacity: 0.9;
+    box-shadow: 0 0 10px var(--cyan-glow);
+  }
+  .self-eval .corner-line {
+    position: absolute; bottom: -2px; right: 40px;
+    width: 200px; height: 4px; background: var(--cyan); opacity: 0.9;
+    box-shadow: 0 0 10px var(--cyan-glow);
+  }
+
+  /* bottom watermark note */
+  .watermark { position: absolute; bottom: 20px; right: 60px;
+    font-size: 22px; color: rgba(37,224,232,0.4); font-weight: 700; letter-spacing: 2px; }
+
+  /* print */
+  @media print {
+    @page { size: A4 portrait; margin: 0; }
+    body { overflow: visible; }
+    #scaler { zoom: 0.451 !important; }
+  }
+</style>
+</head>
+<body>
+<div id="scaler">
+  <div class="bg-layer">
+    <div class="grid-bg"></div>
+    <div class="frame">
+      <div class="tr"></div>
+      <div class="bl"></div>
+    </div>
+    <div class="rivet tl"></div>
+    <div class="rivet tr"></div>
+    <div class="rivet bl"></div>
+    <div class="rivet br"></div>
+    <div class="hatch-top"></div>
+    <div class="hatch-bot"></div>
+    <div class="side-dots">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <div class="side-dots right">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+
+    <!-- circuit decoration SVG bottom-right -->
+    <svg class="circuit" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none" stroke="#25e0e8" stroke-width="2">
+        <path d="M0 300 L80 300 L120 260 L180 260"/>
+        <circle cx="80" cy="300" r="5" fill="#25e0e8"/>
+        <circle cx="180" cy="260" r="5" fill="#25e0e8"/>
+        <path d="M180 260 L180 180 L260 180 L260 120 L340 120"/>
+        <circle cx="260" cy="180" r="5" fill="#25e0e8"/>
+        <circle cx="340" cy="120" r="6" fill="#25e0e8"/>
+        <path d="M340 120 L420 120 L420 60 L500 60 L500 120"/>
+        <circle cx="420" cy="60" r="5" fill="#25e0e8"/>
+        <circle cx="500" cy="60" r="5" fill="#25e0e8"/>
+        <path d="M500 120 L500 200 L560 200"/>
+        <circle cx="500" cy="120" r="6" fill="#25e0e8"/>
+        <circle cx="500" cy="200" r="5" fill="#25e0e8"/>
+        <path d="M60 380 L60 340 L140 340 L140 300 L200 300"/>
+        <circle cx="60" cy="340" r="5" fill="#25e0e8"/>
+        <circle cx="140" cy="340" r="5" fill="#25e0e8"/>
+        <circle cx="200" cy="300" r="5" fill="#25e0e8"/>
+        <path d="M200 300 L260 300 L260 240 L340 240 L340 300"/>
+        <circle cx="260" cy="240" r="5" fill="#25e0e8"/>
+        <circle cx="340" cy="240" r="5" fill="#25e0e8"/>
+        <circle cx="340" cy="300" r="7" fill="#25e0e8"/>
+        <path d="M340 300 L420 300 L420 220 L480 220"/>
+        <circle cx="420" cy="220" r="5" fill="#25e0e8"/>
+        <circle cx="480" cy="220" r="5" fill="#25e0e8"/>
+        <path d="M420 300 L420 340 L500 340 L500 380"/>
+        <circle cx="420" cy="340" r="5" fill="#25e0e8"/>
+        <circle cx="500" cy="340" r="6" fill="#25e0e8"/>
+      </g>
+      <g fill="#25e0e8">
+        <circle cx="220" cy="100" r="14" opacity="0.2"/>
+        <circle cx="220" cy="100" r="8" opacity="0.5"/>
+        <circle cx="380" cy="260" r="16" opacity="0.15"/>
+        <circle cx="380" cy="260" r="9" opacity="0.4"/>
+        <circle cx="540" cy="140" r="12" opacity="0.2"/>
+        <circle cx="540" cy="140" r="6" opacity="0.5"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="content">
+
+    <!-- header -->
+    <div class="header">
+      <div class="name">{{name}}</div>
+      <div class="header-right">
+        <div class="title">{{title}}</div>
+        <div class="subtitle">大模型底层研发 <span class="sep">｜</span> 多模态大模型 <span class="sep">｜</span> 工业AI全栈落地</div>
+        <div class="contact">
+          {{phone}}<span class="sep">|</span>{{email}}<span class="sep">|</span>{{github_url}}
+        </div>
+      </div>
+    </div>
+
+    <!-- core abilities hex panel -->
+    <div class="hex-panel">
+      <h2>核心能力</h2>
+      <div class="core-abilities">
+        <div class="abilities-left">
+          <div class="item">
+            <div class="icon-wrap">
+              <div class="dial"></div>
+              <div class="dial-cnt">✓</div>
+            </div>
+          </div>
+          <div class="items">
+            <div class="item-t">LLM底层架构</div>
+            <div class="item-t">ViT多模态视觉</div>
+          </div>
+        </div>
+        <div class="radar">
+          <div class="ring"></div>
+          <div class="ring r2"></div>
+          <div class="ring r3"></div>
+          <div class="ring r4"></div>
+          <div class="cross"></div>
+          <div class="sweep"></div>
+          <div class="dot"></div>
+          <div class="dot d2"></div>
+          <div class="dot d3"></div>
+          <div class="center">☰</div>
+          <div class="arc-tick"></div>
+          <div class="arc-tick t2"></div>
+          <div class="arc-tick t3"></div>
+          <div class="arc-tick t4"></div>
+        </div>
+        <div class="abilities-right">
+          <div class="tag">工业高并发数采</div>
+          <div class="tag">云原生架构</div>
+          <div class="tag">垂类模型定制</div>
+          <div class="tag hot">GGUF推理优化</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- main two columns -->
+    <div class="main-grid">
+      <div class="left-col">
+
+        <div class="card">
+          <h3>教育背景</h3>
+          <ul>
+            <li><b>{{education.0.school}}</b><span class="sep">｜</span>{{education.0.detail}}</li>
+            <li><b>{{education.1.school}}</b><span class="sep">｜</span>{{education.1.detail}}</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>工作经历</h3>
+          <div class="work-card">
+            <div class="work-row">
+              <div class="box">
+                <h4>竞赛荣誉</h4>
+                <p><b>{{honors.0.name}}</b>{{honors.0.detail}}<span class="c">{{honors.0.highlight}}</span></p>
+              </div>
+              <div class="hex-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+            </div>
+            <div class="work-row">
+              <div class="box">
+                <h4>{{jobs.0.org}}</h4>
+                <p>{{jobs.0.role}}<br><span class="c">{{jobs.0.date}}</span></p>
+              </div>
+              <div class="hex-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="thumbs">
+          <div class="thumb">
+            <div class="net"></div>
+            <div class="wave"></div>
+            <div class="tag">开源项目</div>
+            <div class="title">{{repos.0.name}}</div>
+            <div class="desc">工业高速异步数采框架</div>
+            <div class="url">{{repos.0.url}}</div>
+          </div>
+          <div class="thumb">
+            <div class="net"></div>
+            <div class="wave"></div>
+            <div class="tag">开源项目</div>
+            <div class="title">{{repos.1.name}}</div>
+            <div class="desc">ViT多模态推理优化</div>
+            <div class="url">{{repos.1.url}}</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="right-col">
+
+        <div class="card">
+          <h3>实务经历</h3>
+          <div style="font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 6px;">
+            {{internships.0.org}}<span class="sep">｜</span>{{internships.0.role}}<span class="sep">｜</span><span class="c">{{internships.0.date}}</span>
+          </div>
+
+          <div class="sub-h">项目经历</div>
+          <ul class="proj-list">
+            <li><b>{{projects.0.org}}</b><span class="sep">｜</span>{{projects.0.name}}<span class="sep">｜</span><span class="c">{{projects.0.date}}</span></li>
+            <li><b>{{projects.1.org}}</b><span class="sep">｜</span><span class="c">{{projects.1.date}}</span></li>
+            <li><b>{{projects.2.org}}</b><span class="sep">｜</span>{{projects.2.name}}<span class="sep">｜</span><span class="c">{{projects.2.date}}</span></li>
+            <li><b>{{projects.3.org}}</b><span class="sep">｜</span>{{projects.3.name}}<span class="sep">｜</span><span class="c">{{projects.3.date}}</span></li>
+            <li><b>{{projects.4.org}}</b><span class="sep">｜</span>{{projects.4.name}}<span class="sep">｜</span><span class="c">{{projects.4.date}}</span></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- self evaluation bottom -->
+    <div class="self-eval">
+      <h3>自我评价</h3>
+      <ul>
+        <li><b>{{self_eval.0.text}}</b>，{{self_eval.1.text}}</li>
+      </ul>
+      <div class="repos">
+        <div class="label">开源项目</div>
+        <ul>
+          <li><span class="repo-name">{{repos.0.name}}</span> <span class="sep">／</span> <span class="repo-url">https://{{repos.0.url}}</span></li>
+          <li><span class="repo-name">{{repos.1.name}}</span> <span class="sep">／</span> <span class="repo-url">https://{{repos.1.url}}</span></li>
+          <li><span class="repo-name">{{repos.2.name}}</span> <span class="sep">／</span> <span class="repo-url">https://{{repos.2.url}}</span></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="watermark">豆包AI生成</div>
+</div>
+
+<script>
+  (function () {
+    var scaler = document.getElementById("scaler");
+    function fit() {
+      var s = Math.min(1, document.documentElement.clientWidth / 1760);
+      scaler.style.zoom = s;
+    }
+    window.addEventListener("resize", fit);
+    fit();
+  })();
+</script>
+</body>
+</html>

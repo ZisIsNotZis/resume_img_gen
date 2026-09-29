@@ -1,0 +1,58 @@
+{
+  "name": "示例人物 Example Person",
+  "title": "AI Infra / Agent Harness Engineer",
+  "subtitle": "推理加速 ｜ Agent 框架 ｜ 可复现评测",
+  "positioning_label": "求职定位：",
+  "positioning": "6 年系统与 AI 基础设施经验 ｜ 推理/量化/评测 ｜ 开源可复现",
+  "phone": "+86 000-0000-0000",
+  "email": "example.person@example.com",
+  "github_url": "https://github.com/example",
+  "github_short": "github.com/example",
+  "homepage_url": "https://example.com",
+  "homepage_short": "example.com",
+  "contact_line": "+86 000-0000-0000 ｜ example.person@example.com ｜ github.com/example",
+  "core_tags_line": "推理加速 · Agent Harness · 量化 · 可复现评测",
+  "core_tags": ["推理加速", "Agent Harness", "量化/采样", "可复现评测"],
+  "education": [
+    { "school": "示例大学 A", "detail": "计算机科学 硕士 ｜ 2019–2022" },
+    { "school": "示例大学 B", "detail": "软件工程 学士 ｜ 2015–2019" }
+  ],
+  "jobs": [
+    { "org": "示例科技公司", "role": "高级基础设施工程师", "date": "2022.07–至今" },
+    { "org": "示例实验室", "role": "研究实习（非正式编制）", "date": "2021.06–2021.12" }
+  ],
+  "internships": [
+    { "org": "示例研究院", "role": "推理优化实习", "date": "2021.06–2021.12" }
+  ],
+  "projects": [
+    { "name": "tiny-llm-eval-factors", "org": "量化/采样/推理因子研究", "date": "2024" },
+    { "name": "agent-harness-lab", "org": "Agent Harness 复现与评测", "date": "2024" },
+    { "name": "serving-bench", "org": "推理服务压测工具", "date": "2023" },
+    { "name": "quant-kernels", "org": "低比特算子实验（POC，非生产）", "date": "2023" },
+    { "name": "doc-agent", "org": "文档问答 Agent（模拟评测）", "date": "2023" }
+  ],
+  "repos": [
+    { "name": "example/tiny-llm-eval-factors", "url": "https://github.com/example/tiny-llm-eval-factors" },
+    { "name": "example/agent-harness-lab", "url": "https://github.com/example/agent-harness-lab" },
+    { "name": "example/serving-bench", "url": "https://github.com/example/serving-bench" }
+  ],
+  "honors": [
+    { "name": "示例竞赛", "detail": "工程组 一等奖", "highlight": "TOP 1%" },
+    { "name": "开源贡献", "detail": "合并 3 个 PR（示例）", "highlight": "MERGED" }
+  ],
+  "skills": [
+    { "name": "推理与系统", "extra": "CUDA / vLLM / 量化" },
+    { "name": "Agent 与评测", "extra": "Harness / Eval / 复现" },
+    { "name": "工程", "extra": "Python / C++ / CI" }
+  ],
+  "self_eval": [
+    { "text": "注：本文档为示例数据，人物、单位、联系方式均为虚构，仅用于演示模板。" },
+    { "text": "所有指标均为示意，不代表真实经历。" }
+  ],
+  "timeline": [
+    { "entry": "示例大学 B · 软件工程" },
+    { "entry": "示例科技公司 · 基础设施" },
+    { "entry": "tiny-llm-eval-factors · 开源" },
+    { "entry": "agent-harness-lab · 开源" }
+  ]
+}
