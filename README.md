@@ -1,5 +1,9 @@
 # resume_img_gen
 
+> **Status: closed (milestone, 2026-09-29).** A complete small package for
+> rendering resume images (HTML/PNG/PDF). The owner maintains it directly; no
+> further development is planned unless the project's inputs or goals change.
+
 Generate resume **images** — HTML, PNG, and PDF — from structured data and
 reusable HTML templates.
 
