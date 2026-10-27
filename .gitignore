@@ -8,3 +8,4 @@ dist/
 *.png
 *.pdf
 !docs/*.png
+.pytest_cache/
