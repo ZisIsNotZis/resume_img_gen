@@ -1,71 +1,104 @@
-# resume_img_gen
+**English** | [简体中文](README.zh-CN.md)
 
-> **Status: closed (milestone, 2026-09-29).** A complete small package for
-> rendering resume images (HTML/PNG/PDF). The owner maintains it directly; no
-> further development is planned unless the project's inputs or goals change.
+![resume_img_gen](assets/logo.svg)
 
-Generate resume **images** — HTML, PNG, and PDF — from structured data and
-reusable HTML templates.
+Data in, designed resume out — HTML, PNG, and print-ready PDF.
 
-Three independent stages, one small dependency-light Python package:
+**One JSON file of resume text plus any of eight hand-built HTML design
+canvases produces a matching HTML page, a pixel-cropped PNG, or an A4 PDF, with
+no rendering service, no browser-automation library, and no Python
+dependencies.** Layout and content stay independent: the template owns every
+pixel of the design, the data file owns every word, so one person's text can
+drive any number of looks and one look can be reused by any number of people.
 
-| stage | input | output | backend |
-|-------|-------|--------|---------|
-| `render` | JSON data + HTML template | HTML | pure Python (no deps) |
-| `shot`   | HTML | PNG or PDF | headless Chromium / Chrome / Edge |
-| `pdf`    | Markdown | PDF | pandoc + WeasyPrint (via `uv` if missing) |
-
-Text lives in your data file; templates are pure design canvases whose every
-content string is a `{{token}}`. That keeps layout and content independent, so
-one data file can drive many looks.
-
-## Install
-
-No required third-party Python packages.
+## Quick start
 
 ```sh
-git clone https://github.com/zisisnotzis/resume_img_gen
+git clone https://github.com/ZisIsNotZis/resume_img_gen
 cd resume_img_gen
-pipx install .        # or: pip install .
-# or run in place:  python3 -m resume_img_gen <command> ...
+pipx install .            # or: pip install .   (or run in place: python3 -m resume_img_gen)
 ```
 
-External tools, only for the stage that needs them:
-
-- `shot` needs a headless-capable browser (Chrome, Chromium, Edge, or Playwright's
-  `chrome-headless-shell`). It is auto-detected.
-- `pdf` needs `pandoc`, and either `weasyprint` or `uv` on `PATH`.
-
-## Quickstart
+Then, from the repository root:
 
 ```sh
-# 1. list the bundled templates
-python3 -m resume_img_gen render --list
-
-# 2. JSON + template -> HTML
-python3 -m resume_img_gen render \
-    --template clean-teal-ribbon \
-    --data examples/example.json \
-    --out /tmp/resume.html
-
-# 3. HTML -> PNG (viewport crop of the design canvas)
-python3 -m resume_img_gen shot /tmp/resume.html --out /tmp/resume.png \
-    --width 1760 --height 2400
-
-# 4. ...or straight to PDF
-python3 -m resume_img_gen shot /tmp/resume.html --out /tmp/resume.pdf
-
-# Markdown -> PDF (optional front matter, appendix page breaks built in)
-python3 -m resume_img_gen pdf examples/example.md --out /tmp/resume_md.pdf
+resume-img-gen render --list                       # the 8 bundled designs
+resume-img-gen render -t clean-teal-ribbon \
+    -d examples/example.json -o resume.html       # JSON + template -> HTML
+resume-img-gen shot resume.html -o resume.png \
+    --width 1760 --height 2400                     # HTML -> PNG
 ```
+
+No third-party Python package is needed for `render` or for installing the
+package. The other two stages use tools you may already have:
+
+- `shot` (HTML → PNG/PDF) needs a headless-capable Chrome, Chromium, Edge, or
+  Playwright's `chrome-headless-shell`. It searches `PATH` and the usual
+  Playwright/Puppeteer cache locations; pass `--chrome PATH` if yours is
+  elsewhere.
+- `pdf` (Markdown → PDF) needs `pandoc`, plus either `weasyprint` or `uv` on
+  `PATH` (WeasyPrint is run through `uv tool run` when it is not installed).
 
 `examples/example.json` and `examples/example.md` are **fictional sample data**
-(fake person, fake employers, fake contacts) used only to demonstrate the
-pipeline. Replace them with your own.
+(fake person, employers, contacts) that only demonstrates the pipeline. Replace
+them with your own.
+
+## What it can do now
+
+- **`render`** — a dependency-free mustache-like engine: `{{key}}` with dotted
+  paths (`{{jobs.0.org}}`), `{{#key}}…{{/key}}` sections over lists/dicts/truthy
+  scalars, `{{^key}}…{{/key}}` inverted sections, nesting, `{{.}}` and
+  `{{@index}}` inside loops.
+- **Eight bundled design canvases** — `classic-sidebar`, `clean-teal-columns`,
+  `clean-teal-ribbon`, `dark-hud-circuit`, `dark-hud-dossier`, `dark-hud-radar`,
+  `paper-orange-timeline`, `warm-paper-timeline`. Fixed-size canvases that
+  scale to fit the window width, scroll vertically, and print as one A4 page.
+- **Your own templates** — drop `*.html` into a directory and pass
+  `--templates-dir`; `--list` then lists yours too.
+- **`shot`** — viewport screenshot at exactly `--width`/`--height` (plus
+  `--scale` for HiDPI), or `--out file.pdf` for a browser print with no
+  header/footer.
+- **`pdf`** — Markdown through pandoc and a bundled CJK-safe A4 stylesheet
+  (page numbers in the footer), with `--until "# Appendix"` to build a short
+  edition from the same source.
+- **CJK-first defaults** — the bundled designs and the PDF stylesheet are built
+  around Chinese resume typography; English works the same way.
+- **A written method** for cloning a reference image into a reusable template:
+  [`docs/PLAYBOOK.md`](docs/PLAYBOOK.md).
+
+## How the pieces fit
+
+Three stages that can be used independently, plus one stylesheet. Nothing calls
+across a stage boundary except through a file on disk, so you can stop after any
+of them.
+
+```
+resume_img_gen/
+  resume_img_gen/
+    cli.py                  # argparse: render | shot | pdf
+    render.py               # template engine + JSON loading, no dependencies
+    shot.py                 # find a headless browser, exec it for PNG/PDF
+    pdf.py                  # pandoc -> HTML -> WeasyPrint
+    resume.css              # A4 / CJK WeasyPrint stylesheet
+    templates/*.html        # 8 design canvases, every string a {{token}}
+  examples/                 # fictional sample data (JSON and Markdown)
+  docs/PLAYBOOK.md          # reference PNG -> HTML -> compare loop
+  docs/project-status.md    # scope, boundaries, and why the design is closed
+  tests/test_render.py      # smoke tests for the engine and all templates
+```
+
+`render` reads the template and the JSON, expands the tokens, and writes HTML.
+`shot` resolves the HTML to a `file://` URL and hands it to a browser binary.
+`pdf` reads Markdown, converts it with pandoc, wraps it in the stylesheet, and
+runs WeasyPrint. The only shared assumption is that a template is a
+self-contained page.
+
+**One rule keeps templates reusable:** a template may contain design, never
+content. If a name, phone number, or employer appears as a literal string in the
+HTML, the design is not reusable — put a `{{token}}` there instead. `tests/`
+enforces this for the bundled set.
 
 ## Template syntax
-
-A mustache-like mini-language, implemented in ~120 lines with no dependencies:
 
 ```
 {{key}}                 variable (dotted paths: {{job.org}})
@@ -77,37 +110,49 @@ A mustache-like mini-language, implemented in ~120 lines with no dependencies:
 Sections nest. **Data is trusted, so `{{...}}` is not HTML-escaped** — escape
 untrusted values before rendering.
 
-Put your own templates in a directory and point `--templates-dir` at it. A
-template is accepted as a reusable design when, after rendering with different
-data, the output differs only where content differs and the template contains no
-hard-coded personal strings (grep it).
+## Development
 
-Bundled designs: `classic-sidebar`, `clean-teal-columns`, `clean-teal-ribbon`,
-`dark-hud-circuit`, `dark-hud-dossier`, `dark-hud-radar`,
-`paper-orange-timeline`, `warm-paper-timeline`.
-
-## Recreating a design from a reference image
-
-See [`docs/PLAYBOOK.md`](docs/PLAYBOOK.md) for the proven **reference PNG → HTML
-→ render → compare** loop, including the gotchas that cost hours to find once:
-scroll-killing `overflow: hidden`, unequal `1fr` grid columns, CJK fonts, and
-"match line counts, not colors."
-
-## Layout
-
+```sh
+python3 -m pytest tests/           # or, without pytest installed:
+python3 tests/test_render.py       # prints ok per test
 ```
-resume_img_gen/
-  resume_img_gen/
-    cli.py        # `render` / `shot` / `pdf` subcommands
-    render.py     # dependency-free template engine
-    shot.py       # headless-browser PNG/PDF
-    pdf.py        # pandoc + WeasyPrint
-    resume.css    # A4 WeasyPrint stylesheet (CJK-friendly)
-    templates/    # 8 bundled design canvases
-  examples/       # fictional sample data
-  docs/PLAYBOOK.md
-```
+
+There is no linter or formatter configuration in this repository; keep the
+existing style (standard library only, `from __future__ import annotations`).
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the review bar and the template
+acceptance test.
+
+## Contributing
+
+Bug reports and new design canvases are welcome — see
+[`CONTRIBUTING.md`](CONTRIBUTING.md). The one hard requirement for a new
+template is in [`docs/PLAYBOOK.md`](docs/PLAYBOOK.md#acceptance-test-for-a-new-reusable-template):
+render it against different data, and the output must differ only where the
+content differs.
+
+## Roadmap
+
+**Implemented**
+
+- Template engine, JSON → HTML rendering, and the `render`/`shot`/`pdf`
+  subcommands, with `--list`, `--templates-dir`, `--chrome`, `--scale`, and
+  `--until`.
+- Eight reusable design canvases across light, paper, and dark-HUD families.
+- A4 CJK stylesheet for the Markdown → PDF path.
+- Smoke tests covering the engine and every bundled template.
+- The reference-image cloning playbook.
+
+**Planned**
+
+- Nothing. This repository is a **closed milestone**: the three-stage pipeline
+  is complete and no further development is planned unless the project's inputs
+  or goals change (recorded in [`docs/project-status.md`](docs/project-status.md)).
+
+If it is ever reopened, the natural direction is more design canvases and more
+export targets behind the same `data + template` interface, since the stages are
+already isolated behind files. That is a direction, not a promise.
 
 ## License
 
-LGPL-3.0-or-later — see [`LICENSE`](LICENSE).
+LGPL-3.0-or-later — see [`LICENSE`](LICENSE). `COPYING` holds the GNU GPL-3.0
+text that LGPL-3.0 builds on. Copyright (C) ZisIsNotZis.
